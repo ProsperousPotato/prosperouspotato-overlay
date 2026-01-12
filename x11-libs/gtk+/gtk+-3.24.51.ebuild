@@ -35,6 +35,7 @@ COMMON_DEPEND="
 	>=x11-libs/gdk-pixbuf-2.30:2[introspection?,${MULTILIB_USEDEP}]
 	>=x11-libs/pango-1.44.0[introspection?,${MULTILIB_USEDEP}]
 	x11-misc/shared-mime-info
+	<=dev-libs/atk-2.38.0
 
 	cloudproviders? ( net-libs/libcloudproviders[${MULTILIB_USEDEP}] )
 	colord? ( >=x11-misc/colord-0.1.9:0=[${MULTILIB_USEDEP}] )
