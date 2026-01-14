@@ -21,33 +21,32 @@ RESTRICT="strip"
 
 BDEPEND="app-arch/unzip"
 RDEPEND="${DEPEND}
-    !www-client/glide-browser-bin:0
-    || (
-        media-libs/libpulse
-        media-sound/apulse
-    )
-    >=app-accessibility/at-spi2-core-2.46.0:2
-    >=dev-libs/glib-2.26:2
-    media-libs/alsa-lib
-    media-libs/fontconfig
-    >=media-libs/freetype-2.4.10
-    media-video/ffmpeg
-    sys-apps/dbus
-    virtual/freedesktop-icon-theme
-    >=x11-libs/cairo-1.10[X]
-    x11-libs/gdk-pixbuf:2
-    >=x11-libs/gtk+-3.11:3[X,wayland?]
-    x11-libs/libX11
-    x11-libs/libXcomposite
-    x11-libs/libXcursor
-    x11-libs/libXdamage
-    x11-libs/libXext
-    x11-libs/libXfixes
-    x11-libs/libXi
-    x11-libs/libXrandr
-    x11-libs/libXrender
-    x11-libs/libxcb
-    >=x11-libs/pango-1.22.0
+	!www-client/glide-browser-bin:0
+	|| (
+		media-libs/libpulse
+		media-sound/apulse
+	)
+	>=dev-libs/glib-2.26:2
+	media-libs/alsa-lib
+	media-libs/fontconfig
+	>=media-libs/freetype-2.4.10
+	media-video/ffmpeg
+	sys-apps/dbus
+	virtual/freedesktop-icon-theme
+	>=x11-libs/cairo-1.10[X]
+	x11-libs/gdk-pixbuf:2
+	>=x11-libs/gtk+-3.11:3[X,wayland?]
+	x11-libs/libX11
+	x11-libs/libXcomposite
+	x11-libs/libXcursor
+	x11-libs/libXdamage
+	x11-libs/libXext
+	x11-libs/libXfixes
+	x11-libs/libXi
+	x11-libs/libXrandr
+	x11-libs/libXrender
+	x11-libs/libxcb
+	>=x11-libs/pango-1.22.0
 "
 
 
@@ -74,12 +73,27 @@ src_install() {
 
 	dobin "${T}/glide-bin"
 
-	make_desktop_entry \
-		"/usr/bin/glide-bin %u" \
-		"Glide Browser" \
-		"glide-bin" \
-		"Network;WebBrowser;" \
-		"StartupWMClass=Glide Browser\nMimeType=text/html;text/xml;application/xhtml+xml;application/xml;application/vnd.mozilla.xul+xml;x-scheme-handler/http;x-scheme-handler/https;"
+	local app_name="Glide Browser"
+	local desktop_file="${FILESDIR}/icon/${PN}.desktop"
+	local exec_command="${PN}"
+	local icon="${PN}"
+	local use_wayland="false"
+
+	if use wayland ; then
+		use_wayland="true"
+	fi
+
+	cp "${desktop_file}" "${WORKDIR}/${PN}.desktop-template" || die
+
+	sed -i \
+		-e "s:@NAME@:${app_name}:" \
+		-e "s:@EXEC@:${exec_command}:" \
+		-e "s:@ICON@:${icon}:" \
+		"${WORKDIR}/${PN}.desktop-template" || die
+
+	newmenu "${WORKDIR}/${PN}.desktop-template" glide-browser-bin.desktop
+
+	rm "${WORKDIR}/${PN}.desktop-template" || die
 
 	local size
 	for size in 16 32 48 64 128; do
