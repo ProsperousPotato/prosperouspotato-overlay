@@ -78,7 +78,7 @@ src_install() {
 	local app_name="Glide Browser"
 	local desktop_file="${FILESDIR}/icon/${PN}.desktop"
 	local exec_command="${BIN_NAME}"
-	local icon="/usr/share/icons/hicolor/128x128/apps/${BIN_NAME}.png"
+	local icon="/usr/share/icons/hicolor/128x128/apps/${PN}.png"
 
 	cp "${desktop_file}" "${WORKDIR}/${PN}.desktop-template" || die
 
@@ -97,7 +97,7 @@ src_install() {
 	for size in 16 32 48 64 128; do
 		newicon -s ${size} \
 			"${ED}${destdir}/browser/chrome/icons/default/default${size}.png" \
-			${BIN_NAME}.png
+			${PN}.png
 	done
 }
 
