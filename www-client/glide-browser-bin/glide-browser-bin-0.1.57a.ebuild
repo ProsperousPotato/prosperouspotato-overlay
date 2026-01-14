@@ -74,7 +74,7 @@ src_install() {
 
 	dobin "${T}/glide-bin"
 
-	cat > "/usr/share/applications/${PN}" <<-EOF || die
+	cat > "/usr/share/applications/${PN}.desktop" <<-EOF || die
 		/usr/bin/glide-bin %u
 		Glide Browser
 		glide-bin
@@ -82,7 +82,7 @@ src_install() {
 		StartupWMClass=Glide Browser\nMimeType=text/html;text/xml;application/xhtml+xml;application/xml;application/vnd.mozilla.xul+xml;x-scheme-handler/http;x-scheme-handler/https;
 	EOF
 
-	fperms 0755 "/usr/share/applications/${PN}"
+	chmod 0755 "/usr/share/applications/${PN}"
 
 	local size
 	for size in 16 32 48 64 128; do
