@@ -86,6 +86,7 @@ src_install() {
 	cp "${desktop_file}" "${WORKDIR}/${PN}.desktop-template" || die
 
 	sed -i \
+		-e "s:@VERSION@:${PV}:" \
 		-e "s:@NAME@:${app_name}:" \
 		-e "s:@EXEC@:${exec_command}:" \
 		-e "s:@ICON@:${icon}:" \
