@@ -9,7 +9,7 @@ SRC_URI="https://github.com/vinceliuice/Matcha-gtk-theme/archive/refs/tags/2025-
 
 LICENSE="GPL-3+"
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~arm64 ~x86"
+KEYWORDS="amd64 arm arm64 x86"
 
 RDEPEND="
 	gtk2? (
