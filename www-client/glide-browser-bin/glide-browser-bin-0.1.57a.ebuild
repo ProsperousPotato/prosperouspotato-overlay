@@ -54,34 +54,31 @@ S="${WORKDIR}/glide"
 
 QA_PREBUILT="opt/glide-browser-bin/*"
 
+BIN_NAME="glide-bin"
+
 src_install() {
 	local destdir="/opt/${PN}"
 
 	insinto "${destdir}"
 	doins -r ./*
 
-	fperms 0755 "${destdir}/glide-bin"
+	fperms 0755 "${destdir}/${BIN_NAME}"
 
 	if [[ -f "${ED}${destdir}/glide" ]]; then
 		fperms 0755 "${destdir}/glide"
 	fi
 
-	cat > "${T}/glide-bin" <<-EOF || die
+	cat > "${T}/${BIN_NAME}" <<-EOF || die
 		#!/bin/bash
-		exec "/opt/${PN}/glide-bin" "\$@"
+		exec "/opt/${PN}/${BIN_NAME}" "\$@"
 	EOF
 
-	dobin "${T}/glide-bin"
+	dobin "${T}/${BIN_NAME}"
 
 	local app_name="Glide Browser"
 	local desktop_file="${FILESDIR}/icon/${PN}.desktop"
-	local exec_command="${PN}"
-	local icon="${PN}"
-	local use_wayland="false"
-
-	if use wayland ; then
-		use_wayland="true"
-	fi
+	local exec_command="${BIN_NAME}"
+	local icon="/usr/share/icons/hicolor/128x128/apps/${BIN_NAME}.png"
 
 	cp "${desktop_file}" "${WORKDIR}/${PN}.desktop-template" || die
 
@@ -100,7 +97,7 @@ src_install() {
 	for size in 16 32 48 64 128; do
 		newicon -s ${size} \
 			"${ED}${destdir}/browser/chrome/icons/default/default${size}.png" \
-			glide-bin.png
+			${BIN_NAME}.png
 	done
 }
 
