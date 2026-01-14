@@ -16,7 +16,7 @@ RDEPEND="
 		x11-themes/gtk-engines-murrine
 		x11-themes/gtk-engines
 	)
-	icons? x11-themes/papirus-icon-theme
+	icons? ( x11-themes/papirus-icon-theme )
 "
 
 IUSE="gtk2 icons"
