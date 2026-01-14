@@ -74,12 +74,15 @@ src_install() {
 
 	dobin "${T}/glide-bin"
 
-	make_desktop_entry \
-		"/usr/bin/glide-bin %u" \
-		"Glide Browser" \
-		"glide-bin" \
-		"Network;WebBrowser;" \
-		"StartupWMClass=Glide Browser\nMimeType=text/html;text/xml;application/xhtml+xml;application/xml;application/vnd.mozilla.xul+xml;x-scheme-handler/http;x-scheme-handler/https;"
+	cat > "/usr/share/applications/${PN}" <<-EOF || die
+		/usr/bin/glide-bin %u
+		Glide Browser
+		glide-bin
+		Network;WebBrowser;
+		StartupWMClass=Glide Browser\nMimeType=text/html;text/xml;application/xhtml+xml;application/xml;application/vnd.mozilla.xul+xml;x-scheme-handler/http;x-scheme-handler/https;
+	EOF
+
+	fperms 0755 "/usr/share/applications/${PN}"
 
 	local size
 	for size in 16 32 48 64 128; do
