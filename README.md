@@ -1,6 +1,7 @@
 ## Enable with eselect-repository
 ```
 eselect repository add prosperouspotato-overlay git https://github.com/ProsperousPotato/prosperouspotato-overlay.git
+emerge --sync prosperouspotato-overlay
 ```
 
 ## Enable manually
