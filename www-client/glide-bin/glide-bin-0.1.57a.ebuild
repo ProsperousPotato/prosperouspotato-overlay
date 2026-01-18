@@ -52,7 +52,7 @@ RDEPEND="${DEPEND}
 
 S="${WORKDIR}/glide"
 
-QA_PREBUILT="opt/glide-browser-bin/*"
+QA_PREBUILT="opt/glide-bin/*"
 
 src_install() {
 	local destdir="/opt/${PN}"
@@ -66,7 +66,7 @@ src_install() {
 		fperms 0755 "${destdir}/glide"
 	fi
 
-	cat > "${T}/${PN}" <<-EOF || die
+	cat > "${T}/glide" <<-EOF || die
 		#!/bin/bash
 		exec "/opt/${PN}/${PN}" "\$@"
 	EOF
@@ -87,7 +87,7 @@ src_install() {
 		-e "s:@ICON@:${icon}:" \
 		"${WORKDIR}/${PN}.desktop-template" || die
 
-	newmenu "${WORKDIR}/${PN}.desktop-template" glide-browser-bin.desktop
+	newmenu "${WORKDIR}/${PN}.desktop-template" glide-bin.desktop
 
 	rm "${WORKDIR}/${PN}.desktop-template" || die
 
