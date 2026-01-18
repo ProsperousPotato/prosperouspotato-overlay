@@ -75,7 +75,7 @@ src_install() {
 
 	local app_name="Glide Browser"
 	local desktop_file="${FILESDIR}/icon/${PN}.desktop"
-	local exec_command="${PN}"
+	local exec_command="glide"
 	local icon="/usr/share/icons/hicolor/128x128/apps/${PN}.png"
 
 	cp "${desktop_file}" "${WORKDIR}/${PN}.desktop-template" || die
