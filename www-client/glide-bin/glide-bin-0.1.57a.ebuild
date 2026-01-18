@@ -71,7 +71,7 @@ src_install() {
 		exec "/opt/${PN}/${PN}" "\$@"
 	EOF
 
-	dobin "${T}/${PN}"
+	dobin "${T}/glide"
 
 	local app_name="Glide Browser"
 	local desktop_file="${FILESDIR}/icon/${PN}.desktop"
