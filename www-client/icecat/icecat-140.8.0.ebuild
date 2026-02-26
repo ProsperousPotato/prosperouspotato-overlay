@@ -6,7 +6,7 @@
 EAPI=8
 
 # Using Gentoos firefox patches as system libraries and lto are quite nice
-FIREFOX_PATCHSET="firefox-140esr-patches-05.tar.xz"
+FIREFOX_PATCHSET="firefox-140esr-patches-07.tar.xz"
 FIREFOX_LOONG_PATCHSET="firefox-139-loong-patches-02.tar.xz"
 
 LLVM_COMPAT=( 19 20 21 )
@@ -23,7 +23,7 @@ VIRTUALX_REQUIRED="manual"
 
 # Information about the bundled wasi toolchain from
 # https://github.com/WebAssembly/wasi-sdk/
-WASI_SDK_VER=28.0
+WASI_SDK_VER=30.0
 WASI_SDK_LLVM_VER=21
 
 inherit check-reqs desktop flag-o-matic gnome2-utils linux-info llvm-r1 multiprocessing \
@@ -38,7 +38,7 @@ PATCH_URIS=(
 
 # Icecat tarball generated from https://cgit.git.savannah.gnu.org/cgit/gnuzilla.git
 # Script modified to output zstd tarballs due to size and unpacking speed considerations.
-ICECAT_REV="1gnu1"
+ICECAT_REV="2gnu1"
 
 SRC_URI="
 	https://gitlab.com/api/v4/projects/32909921/packages/generic/${PN}/${PV}-${ICECAT_REV}/${P}-${ICECAT_REV}.tar.zst
@@ -53,7 +53,7 @@ SRC_URI="
 S="${WORKDIR}/${PN}-${PV%_*}"
 LICENSE="MPL-2.0 GPL-2 LGPL-2.1"
 SLOT="0"
-KEYWORDS="amd64"
+KEYWORDS="~amd64"
 
 IUSE="+clang dbus debug hardened hwaccel jack libproxy pgo pulseaudio selinux sndio"
 IUSE+=" +system-av1 +system-harfbuzz +system-icu +system-jpeg +system-libevent +system-libvpx"
@@ -106,7 +106,7 @@ COMMON_DEPEND="${FF_ONLY_DEPEND}
 	>=app-accessibility/at-spi2-core-2.46.0:2
 	dev-libs/glib:2
 	dev-libs/libffi:=
-	>=dev-libs/nss-3.112.2
+	>=dev-libs/nss-3.112.3
 	>=dev-libs/nspr-4.36
 	media-libs/alsa-lib
 	media-libs/fontconfig
@@ -629,6 +629,8 @@ src_prepare() {
 
 	# Clear checksums from cargo crates we've manually patched.
 	# moz_clear_vendor_checksums xyz
+	# glslopt: bgo#969412
+	moz_clear_vendor_checksums glslopt
 
 	# Respect choice for "jumbo-build"
 	# Changing the value for FILES_PER_UNIFIED_FILE may not work, see #905431
