@@ -6,7 +6,7 @@
 EAPI=8
 
 # Using Gentoos firefox patches as system libraries and lto are quite nice
-FIREFOX_PATCHSET="firefox-140esr-patches-05.tar.xz"
+FIREFOX_PATCHSET="firefox-140esr-patches-07.tar.xz"
 FIREFOX_LOONG_PATCHSET="firefox-139-loong-patches-02.tar.xz"
 
 LLVM_COMPAT=( 19 20 21 )
@@ -23,8 +23,8 @@ VIRTUALX_REQUIRED="manual"
 
 # Information about the bundled wasi toolchain from
 # https://github.com/WebAssembly/wasi-sdk/
-WASI_SDK_VER=30.0
-WASI_SDK_LLVM_VER=21
+WASI_SDK_VER=32.0
+WASI_SDK_LLVM_VER=22
 
 inherit check-reqs desktop flag-o-matic gnome2-utils linux-info llvm-r1 multiprocessing \
 	optfeature pax-utils python-any-r1 readme.gentoo-r1 rust toolchain-funcs unpacker virtualx xdg
@@ -106,7 +106,7 @@ COMMON_DEPEND="${FF_ONLY_DEPEND}
 	>=app-accessibility/at-spi2-core-2.46.0:2
 	dev-libs/glib:2
 	dev-libs/libffi:=
-	>=dev-libs/nss-3.112.2
+	>=dev-libs/nss-3.112.3
 	>=dev-libs/nspr-4.36
 	media-libs/alsa-lib
 	media-libs/fontconfig
@@ -550,10 +550,6 @@ src_prepare() {
 	eapply "${WORKDIR}/firefox-patches"
 	use loong && eapply "${WORKDIR}/firefox-loong-patches"
 
-	if has_version ">=sys-libs/glibc-2.43"; then
-		eapply "${FILESDIR}/icecat-140.7.1-glibc-2.43.patch"
-	fi
-
 	if use system-icu && has_version ">=dev-libs/icu-78.1"; then
 		eapply "${FILESDIR}/firefox-146.0.1-icu78.patch" # in 147, bug #967261, bgo#967261
 	fi
@@ -633,7 +629,7 @@ src_prepare() {
 
 	# Clear checksums from cargo crates we've manually patched.
 	# moz_clear_vendor_checksums xyz
-	# glibc-2.43
+	# glslopt: bgo#969412
 	moz_clear_vendor_checksums glslopt
 
 	# Respect choice for "jumbo-build"
