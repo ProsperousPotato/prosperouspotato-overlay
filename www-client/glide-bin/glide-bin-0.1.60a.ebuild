@@ -7,7 +7,7 @@ inherit desktop unpacker xdg
 
 
 DESCRIPTION="An extensible and keyboard-focused web browser"
-HOMEPAGE="https://github.com/glide-browser/glide"
+HOMEPAGE="https://www.glide-browser.app"
 SRC_URI="
 	amd64? ( https://github.com/glide-browser/glide/releases/download/${PV}/glide.linux-x86_64.tar.xz -> ${P}-x86_64.tar.xz )
 	arm64? ( https://github.com/glide-browser/glide/releases/download/${PV}/glide.linux-aarch64.tar.xz -> ${P}-aarch64.tar.xz )
