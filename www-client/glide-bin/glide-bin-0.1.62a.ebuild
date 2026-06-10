@@ -33,9 +33,9 @@ RDEPEND="${DEPEND}
 	media-video/ffmpeg
 	sys-apps/dbus
 	virtual/freedesktop-icon-theme
-	>=x11-libs/cairo-1.10[X]
+	>=x11-libs/cairo-1.10
 	x11-libs/gdk-pixbuf:2
-	>=x11-libs/gtk+-3.11:3[X,wayland?]
+	>=x11-libs/gtk+-3.11:3
 	x11-libs/libX11
 	x11-libs/libXcomposite
 	x11-libs/libXcursor

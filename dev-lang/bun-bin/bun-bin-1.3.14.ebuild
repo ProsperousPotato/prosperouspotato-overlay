@@ -15,6 +15,8 @@ SLOT="0"
 KEYWORDS="-* amd64 ~arm64"
 IUSE="bash-completion cpu_flags_x86_avx2 debug fish-completion zsh-completion"
 
+RESTRICT="mirror"
+
 DEPEND="
     bash-completion? ( >=app-shells/bash-completion-2.0 )
     fish-completion? ( app-shells/fish )
