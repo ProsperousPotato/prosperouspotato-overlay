@@ -3,12 +3,10 @@
 
 EAPI=8
 
-inherit toolchain-funcs
+inherit savedconfig toolchain-funcs
 
-DESCRIPTION="A minimal X application that hides the mouse cursor on keypress, and unhides it on mouse-movement"
-HOMEPAGE="https://git.adamsucks.me/${PN}/about
-https://github.com/astier/xhidecursor
-"
+DESCRIPTION="A simple daemon-less notification displayer"
+HOMEPAGE="https://git.adamsucks.me/${PN}/about"
 
 RESTRICT="mirror"
 
@@ -20,16 +18,26 @@ SLOT="0"
 
 DEPEND="
 	x11-libs/libX11
-	x11-libs/libXi
-	x11-libs/libXfixes
+	x11-libs/libXrandr
+	x11-libs/libXrender
+	x11-libs/libXft
+	media-fonts/terminus-font
 "
 
 RDEPEND="${DEPEND}"
 
+src_prepare() {
+	default
+
+	restore_config config.h
+}
+
 src_compile() {
-	emake CC="$(tc-getCC)" CFLAGS="${CFLAGS} -std=c99 -lX11 -lXfixes -lXi" ${PN}
+	emake CC="$(tc-getCC)" ${PN}
 }
 
 src_install() {
 	dobin ${PN}
+
+	save_config config.h
 }
