@@ -6,7 +6,9 @@ EAPI=8
 inherit toolchain-funcs
 
 DESCRIPTION="A minimal X application that hides the mouse cursor on keypress, and unhides it on mouse-movement"
-HOMEPAGE="https://git.adamsucks.me/${PN}.git/about"
+HOMEPAGE="https://git.adamsucks.me/${PN}.git/about
+https://github.com/astier/xhidecursor
+"
 
 RESTRICT="mirror"
 
