@@ -25,7 +25,7 @@ DEPEND="
 RDEPEND="${DEPEND}"
 
 src_compile() {
-	emake CC="$(tc-getCC)" ${PN}
+	emake CC="$(tc-getCC)" CFLAGS="${CFLAGS} -std=c99 -lX11 -lXfixes -lXi" ${PN}
 }
 
 src_install() {
