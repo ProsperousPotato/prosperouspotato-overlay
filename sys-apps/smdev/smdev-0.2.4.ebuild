@@ -5,24 +5,20 @@ EAPI=8
 
 inherit savedconfig toolchain-funcs
 
-DESCRIPTION="A simple daemon-less notification displayer"
-HOMEPAGE="https://git.adamsucks.me/${PN}/about"
+DESCRIPTION="A (mostly) mdev-compatible program to manage device nodes."
+HOMEPAGE="https://git.adamsucks.me/${PN}/about
+https://git.suckless.org/smdev/file/README.html
+"
 
 RESTRICT="mirror"
 
 SRC_URI="https://git.adamsucks.me/${PN}/snapshot/${PN}-${PV}.tar.xz"
-KEYWORDS="amd64"
+KEYWORDS="~amd64"
 
-LICENSE="EUPL"
+LICENSE="MIT"
 SLOT="0"
 
-DEPEND="
-	x11-libs/libX11
-	x11-libs/libXrandr
-	x11-libs/libXrender
-	x11-libs/libXft
-	media-fonts/terminus-font
-"
+DEPEND="sys-kernel/linux-headers"
 
 RDEPEND="${DEPEND}"
 
@@ -33,7 +29,7 @@ src_prepare() {
 }
 
 src_compile() {
-	emake CC="$(tc-getCC)" ${PN}
+	emake CC="$(tc-getCC)" CFLAGS="${CFLAGS}"
 }
 
 src_install() {
