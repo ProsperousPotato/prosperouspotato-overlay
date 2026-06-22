@@ -7,14 +7,14 @@ inherit savedconfig toolchain-funcs
 
 DESCRIPTION="A (mostly) mdev-compatible program to manage device nodes."
 HOMEPAGE="https://git.adamsucks.me/${PN}/about
-https://git.suckless.org/smdev/file/README.html
+https://git.suckless.org/${PN}/file/README.html
 "
 
 RESTRICT="mirror"
 
 SRC_URI="https://git.adamsucks.me/${PN}/snapshot/${PN}-${PV}.tar.xz"
 KEYWORDS="~amd64"
-IUSE="-static"
+IUSE="-static scripts"
 
 LICENSE="MIT"
 SLOT="0"
@@ -54,6 +54,10 @@ src_compile() {
 
 src_install() {
 	dobin ${PN}
+
+	if use scripts; then
+		newinitd "${FILESDIR}/${PN}" ${PN}
+	fi
 
 	save_config config.h
 }
