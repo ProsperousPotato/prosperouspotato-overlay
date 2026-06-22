@@ -13,7 +13,7 @@ RESTRICT="mirror"
 SRC_URI="https://git.adamsucks.me/${PN}/snapshot/${PN}-${PV}.tar.xz"
 KEYWORDS="amd64"
 
-LICENSE="EUPL"
+LICENSE="EUPL-1.1"
 SLOT="0"
 
 DEPEND="
