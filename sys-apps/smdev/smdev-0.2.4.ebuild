@@ -14,6 +14,7 @@ RESTRICT="mirror"
 
 SRC_URI="https://git.adamsucks.me/${PN}/snapshot/${PN}-${PV}.tar.xz"
 KEYWORDS="~amd64"
+IUSE="-static"
 
 LICENSE="MIT"
 SLOT="0"
@@ -44,7 +45,11 @@ src_prepare() {
 }
 
 src_compile() {
-	emake CC="$(tc-getCC)" CFLAGS="${CFLAGS}"
+	if use static; then
+		emake CC="$(tc-getCC)" CFLAGS="${CFLAGS} -static" LDFLAGS="${LDFLAGS} -s -static"
+	else
+		emake CC="$(tc-getCC)" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS} -s"
+	fi
 }
 
 src_install() {
