@@ -18,7 +18,22 @@ KEYWORDS="~amd64"
 LICENSE="MIT"
 SLOT="0"
 
-DEPEND="sys-kernel/linux-headers"
+DEPEND="
+sys-kernel/linux-headers
+acct-group/audio
+acct-group/cdrom
+acct-group/dialout
+acct-group/disk
+acct-group/floppy
+acct-group/input
+acct-group/kmem
+acct-group/render
+acct-group/sgx
+acct-group/tape
+acct-group/tty
+acct-group/usb
+acct-group/video
+"
 
 RDEPEND="${DEPEND}"
 
