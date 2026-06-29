@@ -6,20 +6,23 @@
 EAPI=8
 
 # Using Gentoos firefox patches as system libraries and lto are quite nice
-FIREFOX_PATCHSET="firefox-140esr-patches-07.tar.xz"
+FIREFOX_PATCHSET="firefox-140esr-patches-12.tar.xz"
 FIREFOX_LOONG_PATCHSET="firefox-139-loong-patches-02.tar.xz"
 
-LLVM_COMPAT=( 19 20 21 )
+LLVM_COMPAT=( 20 21 )
 
 # This will also filter rust versions that don't match LLVM_COMPAT in the non-clang path; this is fine.
 RUST_NEEDS_LLVM=1
+
 # If not building with clang we need at least rust 1.76
 RUST_MIN_VER=1.82.0
 
-PYTHON_COMPAT=( python3_{11..14} )
+PYTHON_COMPAT=( python3_{12..14} )
 PYTHON_REQ_USE="ncurses,sqlite,ssl"
 
 VIRTUALX_REQUIRED="manual"
+
+RESTRICT="mirror"
 
 # Information about the bundled wasi toolchain from
 # https://github.com/WebAssembly/wasi-sdk/
@@ -38,10 +41,11 @@ PATCH_URIS=(
 
 # Icecat tarball generated from https://cgit.git.savannah.gnu.org/cgit/gnuzilla.git
 # Script modified to output zstd tarballs due to size and unpacking speed considerations.
-ICECAT_REV="1gnu1"
+GNUVERSION="1"
+FFBUILD="1"
 
 SRC_URI="
-	https://gitlab.com/api/v4/projects/32909921/packages/generic/${PN}/${PV}-${ICECAT_REV}/${P}-${ICECAT_REV}.tar.zst
+	https://gitlab.com/api/v4/projects/32909921/packages/generic/${PN}/${PV}-gnu${GNUVERSION}/${P}-${FFBUILD}gnu${GNUVERSION}.tar.zst
 	${PATCH_URIS[@]}
 	loong? (
 		https://dev.gentoo.org/~xen0n/distfiles/www-client/firefox/${FIREFOX_LOONG_PATCHSET}
@@ -65,6 +69,7 @@ IUSE+=" gnome-shell +jumbo-build openh264 wasm-sandbox"
 REQUIRED_USE="|| ( X wayland )
 	debug? ( !system-av1 )
 	pgo? ( jumbo-build )
+	wasm-sandbox? ( llvm_slot_21 )
 	wayland? ( dbus )
 	wifi? ( dbus )
 "
@@ -86,7 +91,7 @@ BDEPEND="${PYTHON_DEPS}
 	app-alternatives/awk
 	app-arch/unzip
 	app-arch/zip
-	>=dev-util/cbindgen-0.27.0
+	>=dev-util/cbindgen-0.29.4
 	net-libs/nodejs
 	virtual/pkgconfig
 	amd64? ( >=dev-lang/nasm-2.14 )
@@ -106,7 +111,7 @@ COMMON_DEPEND="${FF_ONLY_DEPEND}
 	>=app-accessibility/at-spi2-core-2.46.0:2
 	dev-libs/glib:2
 	dev-libs/libffi:=
-	>=dev-libs/nss-3.112.3
+	>=dev-libs/nss-3.112.5
 	>=dev-libs/nspr-4.36
 	media-libs/alsa-lib
 	media-libs/fontconfig
@@ -146,7 +151,7 @@ COMMON_DEPEND="${FF_ONLY_DEPEND}
 	system-libevent? ( >=dev-libs/libevent-2.1.12:0=[threads(+)] )
 	system-libvpx? ( >=media-libs/libvpx-1.8.2:0=[postproc] )
 	system-pipewire? ( >=media-video/pipewire-1.4.7-r2:= )
-	system-png? ( >=media-libs/libpng-1.6.45:0=[apng] )
+	system-png? ( >=media-libs/libpng-1.6.58:0=[apng] )
 	system-webp? ( >=media-libs/libwebp-1.1.0:0= )
 	wayland? (
 		>=media-libs/libepoxy-1.5.10-r1
@@ -441,11 +446,25 @@ pkg_pretend() {
 	if [[ ${MERGE_TYPE} != binary ]] ; then
 		# Ensure we have enough disk space to compile
 		if use pgo || use debug ; then
-			CHECKREQS_DISK_BUILD="14300M"
+			CHECKREQS_DISK_BUILD="17000M"
+
+			if ! use clang ; then
+				if tc-is-gcc && ver_test "$(gcc-major-version)" -ge 16 && [[ -z "${I_KNOW_WHAT_I_AM_DOING}" ]] ; then
+					eerror "Firefox-140esr can't be compiled with +pgo using gcc >= 16. Use:"
+					eerror "  1) gcc < 16 instead, such as stable gcc-15.2.1,"
+					eerror "  2) \"clang\" use flag to compile Firefox-140esr, or"
+					eerror "  3) disable pgo via \"-pgo\" use flag."
+					eerror "Everything else works with gcc-16 except +pgo."
+					eerror ""
+					eerror "Follow Gentoo bug #975851 or upstream bug #2041879 for progress."
+					eerror "To skip this check for testing purposes, export I_KNOW_WHAT_I_AM_DOING=1 env."
+					die "Firefox-${PV} with gcc+pgo cannot be compiled with the detected gcc version: $(gcc-fullversion)"
+				fi
+			fi
 		elif tc-is-lto ; then
-			CHECKREQS_DISK_BUILD="10600M"
+			CHECKREQS_DISK_BUILD="9900M"
 		else
-			CHECKREQS_DISK_BUILD="7400M"
+			CHECKREQS_DISK_BUILD="9000M"
 		fi
 
 		check-reqs_pkg_pretend
@@ -469,6 +488,20 @@ pkg_setup() {
 			if ! has userpriv ${FEATURES} ; then
 				eerror "Building ${PN} with USE=pgo and FEATURES=-userpriv is not supported!"
 			fi
+
+			if ! use clang ; then
+				if tc-is-gcc && ver_test "$(gcc-major-version)" -ge 16 && [[ -z "${I_KNOW_WHAT_I_AM_DOING}" ]] ; then
+					eerror "Firefox-140esr can't be compiled with +pgo using gcc >= 16. Use:"
+					eerror "  1) gcc < 16 instead, such as stable gcc-15.2.1,"
+					eerror "  2) \"clang\" use flag to compile Firefox-140esr, or"
+					eerror "  3) disable pgo via \"-pgo\" use flag."
+					eerror "Everything else works with gcc-16, but +pgo doesn't."
+					eerror ""
+					eerror "Follow Gentoo bug #975851 or upstream bug #2041879 to follow progress."
+					eerror "To skip this check for testing purposes, export I_KNOW_WHAT_I_AM_DOING=1 env."
+					die "Firefox-${PV} with gcc+pgo cannot be compiled with the detected gcc version: $(gcc-fullversion)"
+				fi
+			fi
 		fi
 
 		if [[ ${use_lto} = yes ]]; then
@@ -479,11 +512,11 @@ pkg_setup() {
 
 		# Ensure we have enough disk space to compile
 		if use pgo || use debug ; then
-			CHECKREQS_DISK_BUILD="14300M"
+			CHECKREQS_DISK_BUILD="17000M"
 		elif [[ ${use_lto} == "yes" ]] ; then
-			CHECKREQS_DISK_BUILD="10600M"
+			CHECKREQS_DISK_BUILD="9900M"
 		else
-			CHECKREQS_DISK_BUILD="7400M"
+			CHECKREQS_DISK_BUILD="9000M"
 		fi
 
 		check-reqs_pkg_setup
