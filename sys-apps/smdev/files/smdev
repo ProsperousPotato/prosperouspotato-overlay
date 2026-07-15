@@ -1,0 +1,18 @@
+#!/sbin/openrc-run
+
+name="smdev"
+description="Populate /dev with smdev"
+
+depend() {
+    need devfs sysfs
+}
+
+start() {
+    ebegin "Populating /dev with smdev"
+    /usr/bin/smdev -s
+    eend $?
+
+    ebegin "Setting smdev as uevent_helper"
+    echo /usr/bin/smdev > /proc/sys/kernel/hotplug 2> /dev/null
+    eend $?
+}
