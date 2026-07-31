@@ -1,0 +1,20 @@
+#!/sbin/openrc-run
+
+name="smdev"
+description="Populate /dev with smdev"
+
+depend() {
+    need devfs sysfs
+	before lvm
+}
+
+start() {
+    ebegin "Populating /dev with smdev && dmsetup"
+    /sbin/smdev -s
+	/sbin/dmsetup mknodes
+    eend $?
+
+    ebegin "Setting smdev as uevent_helper"
+    echo /usr/bin/smdev > /proc/sys/kernel/hotplug 2> /dev/null
+    eend $?
+}

@@ -3,8 +3,6 @@
 
 EAPI=8
 
-inherit toolchain-funcs
-
 DESCRIPTION="Start an xorg server"
 HOMEPAGE="https://www.github.com/Earnestly/sx"
 

@@ -13,8 +13,9 @@ https://git.suckless.org/${PN}/file/README.html
 RESTRICT="mirror"
 
 SRC_URI="https://git.adamsucks.me/${PN}/snapshot/${PN}-${PV}.tar.xz"
-KEYWORDS="~amd64"
-IUSE="-static scripts"
+KEYWORDS="amd64"
+IUSE="-static scripts -lvm"
+REQUIRED_USE="lvm? ( scripts )"
 
 LICENSE="MIT"
 SLOT="0"
@@ -56,7 +57,12 @@ src_install() {
 	dobin ${PN}
 
 	if use scripts; then
-		newinitd "${FILESDIR}/${PN}" ${PN}
+		if use lvm; then
+			newinitd "${FILESDIR}/${PN}-lvm" ${PN}
+		else
+			newinitd "${FILESDIR}/${PN}" ${PN}
+		fi
+
 	fi
 
 	save_config config.h
