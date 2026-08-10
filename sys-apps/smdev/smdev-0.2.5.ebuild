@@ -22,6 +22,7 @@ SLOT="0"
 
 DEPEND="
 sys-kernel/linux-headers
+!systemd-utils[udev]
 acct-group/audio
 acct-group/cdrom
 acct-group/dialout

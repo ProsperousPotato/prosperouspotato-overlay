@@ -22,6 +22,7 @@ IUSE="selinux"
 
 RDEPEND="!<sys-apps/openrc-0.23
 	!sys-apps/opentmpfiles
+	!sys-apps/systemd-utils[tmpfiles]
 	selinux? ( sec-policy/selinux-base-policy )"
 
 src_prepare() {

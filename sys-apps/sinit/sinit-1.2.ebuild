@@ -3,8 +3,6 @@
 
 EAPI=8
 
-inherit savedconfig
-
 DESCRIPTION="A simple init program"
 HOMEPAGE="https://git.adamsucks.me/${PN}/about
 https://git.suckless.org/${PN}/file/README.html
@@ -26,12 +24,6 @@ DEPEND="
 
 RDEPEND="${DEPEND}"
 
-src_prepare() {
-	default
-
-	restore_config config.h
-}
-
 src_compile() {
 	if use static; then
 		emake CFLAGS="${CFLAGS} -static" LDFLAGS="${LDFLAGS} -s -static"
@@ -41,20 +33,7 @@ src_compile() {
 }
 
 src_install() {
-	dosbin ${PN}
+	emake DESTDIR="${D}" PREFIX="${EPREFIX}/usr" install
 
-	dosym /sbin/sinit /sbin/init
-
-	exeinto /etc
-	doexe "${S}"/rc
-	doexe "${S}"/shutdown
-
-	insinto /etc
-	doins "${S}"/rc.splash
-
-	dosym /etc/shutdown /sbin/shutdown
-	dosym /sbin/shutdown /sbin/poweroff
-	dosym /sbin/shutdown /sbin/reboot
-
-	save_config config.h
+	dosym /bin/sinit /sbin/init
 }
