@@ -1,0 +1,16 @@
+DEFINED_PHASES=compile install postinst prepare
+DEPEND=sys-kernel/linux-headers !sys-apps/systemd-utils[udev] acct-group/audio acct-group/cdrom acct-group/dialout acct-group/disk acct-group/floppy acct-group/input acct-group/kmem acct-group/render acct-group/sgx acct-group/tape acct-group/tty acct-group/usb acct-group/video
+DESCRIPTION=A (mostly) mdev-compatible program to manage device nodes.
+EAPI=8
+HOMEPAGE=https://git.adamsucks.me/smdev/about https://git.suckless.org/smdev/file/README.html
+INHERIT=savedconfig toolchain-funcs
+IUSE=-static scripts -lvm savedconfig
+KEYWORDS=amd64
+LICENSE=MIT
+RDEPEND=sys-kernel/linux-headers !sys-apps/systemd-utils[udev] acct-group/audio acct-group/cdrom acct-group/dialout acct-group/disk acct-group/floppy acct-group/input acct-group/kmem acct-group/render acct-group/sgx acct-group/tape acct-group/tty acct-group/usb acct-group/video
+REQUIRED_USE=lvm? ( scripts )
+RESTRICT=mirror
+SLOT=0
+SRC_URI=https://git.adamsucks.me/smdev/snapshot/smdev-0.2.5.tar.xz
+_eclasses_=portability	3c2334cdfbb30bc4b33c85164fe832bf	savedconfig	b9131abe556ad2ea96c01b06d658d363	toolchain-funcs	58a918e3a42d0156f010dcfd43725be5
+_md5_=ed73a06da61fd4da1f9712e289a5f441

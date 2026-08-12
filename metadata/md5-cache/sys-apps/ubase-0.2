@@ -1,0 +1,13 @@
+DEFINED_PHASES=compile install
+DESCRIPTION=Suckless linux base utils
+EAPI=8
+HOMEPAGE=https://git.suckless.org/ubase/file/README.html https://git.adamsucks.me/ubase/about
+IUSE=+init +su static
+KEYWORDS=amd64
+LICENSE=MIT
+RDEPEND=init? ( !sys-apps/sysvinit ) su? ( !sys-apps/shadow[su] !sys-apps/util-linux[su] )
+REQUIRED_USE=|| ( init su )
+RESTRICT=mirror
+SLOT=0
+SRC_URI=https://git.adamsucks.me/ubase/snapshot/ubase-0.2.tar.xz
+_md5_=cf3a09b0c89533b5865d707840c3847a

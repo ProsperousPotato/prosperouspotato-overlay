@@ -14,7 +14,7 @@ HOMEPAGE="https://www.gtk.org/"
 SRC_URI+=" verify-sig? ( ${SRC_URI%%.tar*}.sha256sum )"
 LICENSE="LGPL-2+"
 SLOT="3"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="amd64 x86"
 IUSE="aqua accessibility broadway cloudproviders colord cups examples gtk-doc +introspection sysprof test vim-syntax wayland +X xinerama"
 RESTRICT="!test? ( test )"
 

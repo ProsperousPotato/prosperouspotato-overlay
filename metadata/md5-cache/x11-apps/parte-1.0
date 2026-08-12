@@ -1,0 +1,15 @@
+DEFINED_PHASES=compile install postinst prepare
+DEPEND=x11-libs/libX11 x11-libs/libXrandr x11-libs/libXrender x11-libs/libXft media-fonts/terminus-font
+DESCRIPTION=A simple daemon-less notification displayer
+EAPI=8
+HOMEPAGE=https://git.adamsucks.me/parte/about
+INHERIT=savedconfig toolchain-funcs
+IUSE=savedconfig
+KEYWORDS=amd64
+LICENSE=EUPL-1.1
+RDEPEND=x11-libs/libX11 x11-libs/libXrandr x11-libs/libXrender x11-libs/libXft media-fonts/terminus-font
+RESTRICT=mirror
+SLOT=0
+SRC_URI=https://git.adamsucks.me/parte/snapshot/parte-1.0.tar.xz
+_eclasses_=portability	3c2334cdfbb30bc4b33c85164fe832bf	savedconfig	b9131abe556ad2ea96c01b06d658d363	toolchain-funcs	58a918e3a42d0156f010dcfd43725be5
+_md5_=8248c6321b31548923fdb5e833a3d86d
