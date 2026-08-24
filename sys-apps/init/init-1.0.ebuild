@@ -33,8 +33,12 @@ src_prepare() {
 	restore_config config.zig
 }
 
+src_compile() {
+	zig_src_compile
+}
+
 src_install() {
-	zig build -p "${EPREFIX}"/usr
+	zig_src_install
 
 	insinto /etc
 	newins rc rc
