@@ -1,0 +1,15 @@
+DEFINED_PHASES=compile install postinst prepare
+DEPEND=media-libs/fontconfig x11-libs/libX11 x11-libs/libxcb x11-libs/libXinerama desktop? ( x11-terms/st x11-misc/dmenu x11-apps/xhidecursor x11-apps/parte x11-apps/xset x11-misc/hsetroot media-gfx/nsxiv media-gfx/maim media-video/mpv net-news/newsboat sys-process/htop media-sound/alsa-utils mail-client/neomutt net-p2p/transmission app-editors/neovim x11-apps/sx x11-apps/xrandr x11-misc/xclip x11-misc/xdotool ) x11-base/xorg-proto
+DESCRIPTION=a dynamic window manager for X11
+EAPI=8
+HOMEPAGE=https://dwm.suckless.org/
+INHERIT=savedconfig toolchain-funcs
+IUSE=desktop savedconfig
+KEYWORDS=amd64 ~arm arm64 ppc ppc64 ~riscv x86
+LICENSE=MIT
+RDEPEND=media-libs/fontconfig x11-libs/libX11 x11-libs/libxcb x11-libs/libXinerama desktop? ( x11-terms/st x11-misc/dmenu x11-apps/xhidecursor x11-apps/parte x11-apps/xset x11-misc/hsetroot media-gfx/nsxiv media-gfx/maim media-video/mpv net-news/newsboat sys-process/htop media-sound/alsa-utils mail-client/neomutt net-p2p/transmission app-editors/neovim x11-apps/sx x11-apps/xrandr x11-misc/xclip x11-misc/xdotool )
+RESTRICT=mirror
+SLOT=0
+SRC_URI=https://git.adamsucks.me/dwm/snapshot/dwm-6.8.tar.xz
+_eclasses_=portability	3c2334cdfbb30bc4b33c85164fe832bf	savedconfig	b9131abe556ad2ea96c01b06d658d363	toolchain-funcs	58a918e3a42d0156f010dcfd43725be5
+_md5_=04bbf487a45e1852384d5ffe24254c69

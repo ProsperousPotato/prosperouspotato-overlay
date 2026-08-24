@@ -1,0 +1,7 @@
+DEFINED_PHASES=-
+DESCRIPTION=Virtual to choose between different icon themes
+EAPI=7
+KEYWORDS=~alpha amd64 arm arm64 ~hppa ~loong ~mips ppc ppc64 ~riscv ~sparc x86
+RDEPEND=x11-themes/matcha-gtk-theme
+SLOT=0
+_md5_=5c697ff25fb75adc43a21ef4ca8a29e4
