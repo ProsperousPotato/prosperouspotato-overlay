@@ -21,7 +21,7 @@ DEPEND="
 	x11-libs/libXrandr
 	x11-libs/libXrender
 	x11-libs/libXft
-	media-fonts/terminus-font
+	media-fonts/font-misc-misc
 "
 
 RDEPEND="${DEPEND}"

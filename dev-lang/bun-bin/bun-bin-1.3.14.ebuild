@@ -18,7 +18,7 @@ IUSE="bash-completion cpu_flags_x86_avx2 debug fish-completion zsh-completion"
 RESTRICT="mirror"
 
 DEPEND="
-    bash-completion? ( >=app-shells/bash-completion-2.0 )
+    bash-completion? ( >=app-shells/bash-completion-2.0[eselect] )
     fish-completion? ( app-shells/fish )
     zsh-completion? ( app-shells/zsh )
 "
