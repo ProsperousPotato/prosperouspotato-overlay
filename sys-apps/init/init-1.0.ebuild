@@ -42,7 +42,10 @@ src_install() {
 
 	insinto /etc
 	newins rc rc
+	fperms 0755 /etc/rc
+
 	newins shutdown shutdown
+	fperms 0755 /etc/shutdown
 
 	dobin ${S}/poweroff
 	dobin ${S}/reboot
