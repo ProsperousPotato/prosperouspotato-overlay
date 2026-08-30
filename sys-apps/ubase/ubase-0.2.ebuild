@@ -23,6 +23,7 @@ DEPEND=""
 RDEPEND="${DEPEND}
 	init? ( !sys-apps/sysvinit )
 	su? ( !sys-apps/shadow[su] !sys-apps/util-linux[su] )
+	static? ( virtual/libcrypt[static-libs] )
 "
 
 ubase_bin() {
