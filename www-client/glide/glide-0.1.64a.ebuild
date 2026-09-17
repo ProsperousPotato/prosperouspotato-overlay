@@ -1060,8 +1060,13 @@ src_install() {
 		newicon -s ${size} "${icon}" ${PN}.png
 	done
 
+	local use_wayland="false"
+	if use wayland ; then
+		use_wayland="true"
+	fi
+
 	# Error - newins
-	# newmenu "${FILESDIR}/icon/glide-r3.desktop" "${PN}.desktop"
+	# newmenu "${FILESDIR}/icon/glide.desktop" "${PN}.desktop"
 
 	if use gnome-shell ; then
 		# Install search provider for Gnome
@@ -1091,7 +1096,7 @@ src_install() {
 
 	# Install wrapper script
 	[[ -f "${ED}/usr/bin/${PN}" ]] && rm "${ED}/usr/bin/${PN}"
-	newbin "${FILESDIR}/${PN}-r1.sh" ${PN}
+	newbin "${FILESDIR}/${PN}.sh" ${PN}
 
 	# Update wrapper
 	sed -i \
