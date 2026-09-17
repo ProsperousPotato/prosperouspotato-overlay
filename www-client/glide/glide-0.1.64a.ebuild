@@ -1,84 +1,52 @@
 # Copyright 1999-2026 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-# Ebuild is based on the Firefox ebuilds in the main repo
-
 EAPI=8
 
-# Using Gentoos firefox patches as system libraries and lto are quite nice
-FIREFOX_PATCHSET="firefox-140esr-patches-13.tar.xz"
-FIREFOX_LOONG_PATCHSET="firefox-139-loong-patches-02.tar.xz"
+LLVM_COMPAT=( 22 )
 
-LLVM_COMPAT=( 20 21 )
-
-# This will also filter rust versions that don't match LLVM_COMPAT in the non-clang path; this is fine.
 RUST_NEEDS_LLVM=1
-
-# Minimum version required to build.
-# Max version supported by LLVM_COMPAT.
-RUST_MIN_VER=1.82.0
-RUST_MAX_VER=1.94.1
-
+RUST_MIN_VER=1.90.0
 PYTHON_COMPAT=( python3_{12..14} )
 PYTHON_REQ_USE="ncurses,sqlite,ssl"
 
 VIRTUALX_REQUIRED="manual"
 
-# Information about the bundled wasi toolchain from
-# https://github.com/WebAssembly/wasi-sdk/
-WASI_SDK_VER=32.0
-WASI_SDK_LLVM_VER=22
+WASI_SDK_VER=34.0
+WASI_SDK_LLVM_VER=23
 
 inherit check-reqs desktop flag-o-matic gnome2-utils linux-info llvm-r1 multiprocessing \
-	optfeature pax-utils python-any-r1 readme.gentoo-r1 rust toolchain-funcs unpacker virtualx xdg
+	optfeature pax-utils python-any-r1 readme.gentoo-r1 rust toolchain-funcs virtualx xdg
 
-DESCRIPTION="GNU IceCat Web Browser"
-HOMEPAGE="https://www.gnu.org/software/gnuzilla/"
-
-PATCH_URIS=(
-	https://dev.gentoo.org/~juippis/mozilla/patchsets/${FIREFOX_PATCHSET}
-)
-
-# Icecat tarball generated from https://cgit.git.savannah.gnu.org/cgit/gnuzilla.git
-# Script modified to output zstd tarballs due to size and unpacking speed considerations.
-GNUVERSION="1"
-FFBUILD="1"
-
+DESCRIPTION="An extensible and keyboard-focused web browser"
+HOMEPAGE="https://www.glide-browser.app"
 SRC_URI="
-	https://gitlab.com/api/v4/projects/32909921/packages/generic/${PN}/${PV}-gnu${GNUVERSION}/${P}-${FFBUILD}gnu${GNUVERSION}.tar.zst
-	${PATCH_URIS[@]}
-	loong? (
-		https://dev.gentoo.org/~xen0n/distfiles/www-client/firefox/${FIREFOX_LOONG_PATCHSET}
-	)
-	wasm-sandbox? (
-		amd64? ( https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-${WASI_SDK_VER/.*/}/wasi-sdk-${WASI_SDK_VER}-x86_64-linux.tar.gz )
-		arm64? ( https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-${WASI_SDK_VER/.*/}/wasi-sdk-${WASI_SDK_VER}-arm64-linux.tar.gz )
-	)"
+https://release-assets.githubusercontent.com/github-production-release-asset/960899579/925799e2-19c9-434c-b1a8-3be54a6af82f -> ${P}.tar.zst
+"
+
 S="${WORKDIR}/${PN}-${PV%_*}"
+
 LICENSE="MPL-2.0 GPL-2 LGPL-2.1"
 SLOT="0"
-KEYWORDS="~amd64"
+KEYWORDS="amd64"
 
-IUSE="+clang dbus debug hardened hwaccel jack libproxy pgo pulseaudio selinux sndio"
-IUSE+=" +system-av1 +system-harfbuzz +system-icu +system-jpeg +system-libevent +system-libvpx"
+IUSE="+clang dbus debug eme-free hardened hwaccel jack libproxy pgo pulseaudio selinux sndio"
+IUSE+=" +system-av1 +system-icu +system-jpeg +system-libevent +system-libvpx"
 IUSE+=" system-pipewire system-png +system-webp test wayland wifi +X"
-
-# Firefox-only IUSE
-IUSE+=" gnome-shell +jumbo-build openh264 wasm-sandbox"
+IUSE+=" +gmp-autoupdate gnome-shell jpegxl +jumbo-build openh264 +telemetry valgrind wasm-sandbox"
 
 REQUIRED_USE="|| ( X wayland )
 	debug? ( !system-av1 )
 	pgo? ( jumbo-build )
-	wasm-sandbox? ( llvm_slot_21 )
 	wayland? ( dbus )
 	wifi? ( dbus )
 "
 
-RESTRICT="!test? ( test )"
+RESTRICT="!test? ( test ) mirror"
 
-FF_ONLY_DEPEND="selinux? ( sec-policy/selinux-mozilla )"
+FF_ONLY_DEPEND="!www-client/firefox:0
+	selinux? ( sec-policy/selinux-mozilla )"
 BDEPEND="${PYTHON_DEPS}
-	$(unpacker_src_uri_depends)
 	$(llvm_gen_dep '
 		llvm-core/clang:${LLVM_SLOT}
 		llvm-core/llvm:${LLVM_SLOT}
@@ -111,8 +79,8 @@ COMMON_DEPEND="${FF_ONLY_DEPEND}
 	>=app-accessibility/at-spi2-core-2.46.0:2
 	dev-libs/glib:2
 	dev-libs/libffi:=
-	>=dev-libs/nss-3.112.5
-	>=dev-libs/nspr-4.36
+	>=dev-libs/nss-3.127
+	>=dev-libs/nspr-4.39
 	media-libs/alsa-lib
 	media-libs/fontconfig
 	media-libs/freetype
@@ -142,17 +110,14 @@ COMMON_DEPEND="${FF_ONLY_DEPEND}
 		>=media-libs/dav1d-1.0.0:=
 		>=media-libs/libaom-3.10.0:=
 	)
-	system-harfbuzz? (
-		>=media-libs/harfbuzz-2.8.1:0=
-		!wasm-sandbox? ( >=media-gfx/graphite2-1.3.13 )
-	)
-	system-icu? ( >=dev-libs/icu-76.1:= )
+	system-icu? ( >=dev-libs/icu-78.1:= )
 	system-jpeg? ( >=media-libs/libjpeg-turbo-1.2.1:= )
 	system-libevent? ( >=dev-libs/libevent-2.1.12:0=[threads(+)] )
 	system-libvpx? ( >=media-libs/libvpx-1.8.2:0=[postproc] )
 	system-pipewire? ( >=media-video/pipewire-1.4.7-r2:= )
-	system-png? ( >=media-libs/libpng-1.6.58:0=[apng] )
+	system-png? ( >=media-libs/libpng-1.6.45:0=[apng] )
 	system-webp? ( >=media-libs/libwebp-1.1.0:0= )
+	valgrind? ( dev-debug/valgrind )
 	wayland? (
 		>=media-libs/libepoxy-1.5.10-r1
 		x11-libs/gtk+:3[wayland]
@@ -216,79 +181,6 @@ llvm_check_deps() {
 	einfo "Using LLVM slot ${LLVM_SLOT} to build" >&2
 }
 
-MOZ_LANGS=(
-	af ar ast be bg br ca cak cs cy da de dsb
-	el en-CA en-GB en-US es-AR es-ES et eu
-	fi fr fy-NL ga-IE gd gl he hr hsb hu
-	id is it ja ka kab kk ko lt lv ms nb-NO nl nn-NO
-	pa-IN pl pt-BR pt-PT rm ro ru
-	sk sl sq sr sv-SE th tr uk uz vi zh-CN zh-TW
-)
-
-# Firefox-only LANGS
-MOZ_LANGS+=( ach )
-MOZ_LANGS+=( an )
-MOZ_LANGS+=( az )
-MOZ_LANGS+=( bn )
-MOZ_LANGS+=( bs )
-MOZ_LANGS+=( ca-valencia )
-MOZ_LANGS+=( eo )
-MOZ_LANGS+=( es-CL )
-MOZ_LANGS+=( es-MX )
-MOZ_LANGS+=( fa )
-MOZ_LANGS+=( ff )
-MOZ_LANGS+=( fur )
-MOZ_LANGS+=( gn )
-MOZ_LANGS+=( gu-IN )
-MOZ_LANGS+=( hi-IN )
-MOZ_LANGS+=( hy-AM )
-MOZ_LANGS+=( ia )
-MOZ_LANGS+=( km )
-MOZ_LANGS+=( kn )
-MOZ_LANGS+=( lij )
-MOZ_LANGS+=( mk )
-MOZ_LANGS+=( mr )
-MOZ_LANGS+=( my )
-MOZ_LANGS+=( ne-NP )
-MOZ_LANGS+=( oc )
-MOZ_LANGS+=( sc )
-MOZ_LANGS+=( sco )
-MOZ_LANGS+=( si )
-MOZ_LANGS+=( skr )
-MOZ_LANGS+=( son )
-MOZ_LANGS+=( szl )
-MOZ_LANGS+=( ta )
-MOZ_LANGS+=( te )
-MOZ_LANGS+=( tl )
-MOZ_LANGS+=( trs )
-MOZ_LANGS+=( ur )
-MOZ_LANGS+=( xh )
-
-mozilla_set_globals() {
-	# https://bugs.gentoo.org/587334
-	local MOZ_TOO_REGIONALIZED_FOR_L10N=(
-		fy-NL ga-IE gu-IN hi-IN hy-AM nb-NO ne-NP nn-NO pa-IN sv-SE
-	)
-
-	local lang xflag
-	for lang in "${MOZ_LANGS[@]}" ; do
-		# en and en_US are handled internally
-		if [[ ${lang} == en ]] || [[ ${lang} == en-US ]] ; then
-			continue
-		fi
-
-		# strip region subtag if $lang is in the list
-		if has ${lang} "${MOZ_TOO_REGIONALIZED_FOR_L10N[@]}" ; then
-			xflag=${lang%%-*}
-		else
-			xflag=${lang}
-		fi
-
-		IUSE+=" l10n_${xflag/[_@]/-}"
-	done
-}
-mozilla_set_globals
-
 moz_clear_vendor_checksums() {
 	debug-print-function ${FUNCNAME} "$@"
 
@@ -301,70 +193,6 @@ moz_clear_vendor_checksums() {
 	sed -i \
 		-e 's/\("files":{\)[^}]*/\1/' \
 		"${S}"/third_party/rust/${1}/.cargo-checksum.json || die
-}
-
-moz_build_xpi() {
-	debug-print-function ${FUNCNAME} "$@"
-
-	local MOZ_TOO_REGIONALIZED_FOR_L10N=(
-		fy-NL ga-IE gu-IN hi-IN hy-AM nb-NO ne-NP nn-NO pa-IN sv-SE
-	)
-
-	cd "${BUILD_DIR}"/browser/locales || die
-	local lang xflag
-	for lang in "${MOZ_LANGS[@]}"; do
-		# en and en_US are handled internally
-		if [[ ${lang} == en ]] || [[ ${lang} == en-US ]] ; then
-			continue
-		fi
-
-		# strip region subtag if $lang is in the list
-		if has ${lang} "${MOZ_TOO_REGIONALIZED_FOR_L10N[@]}" ; then
-			xflag=${lang%%-*}
-		else
-			xflag=${lang}
-		fi
-
-		if use l10n_"${xflag}"; then
-			emake langpack-"${lang}" LOCALE_MERGEDIR=.
-		fi
-	done
-}
-
-moz_install_xpi() {
-	debug-print-function ${FUNCNAME} "$@"
-
-	if [[ ${#} -lt 2 ]] ; then
-		die "${FUNCNAME} requires at least two arguments"
-	fi
-
-	local DESTDIR=${1}
-	shift
-
-	insinto "${DESTDIR}"
-
-	local emid xpi_file xpi_tmp_dir
-	for xpi_file in "${@}" ; do
-		emid=
-		xpi_tmp_dir=$(mktemp -d --tmpdir="${T}")
-
-		# Unpack XPI
-		unzip -qq "${xpi_file}" -d "${xpi_tmp_dir}" || die
-
-		# Determine extension ID
-		if [[ -f "${xpi_tmp_dir}/install.rdf" ]] ; then
-			emid=$(sed -n -e '/install-manifest/,$ { /em:id/!d; s/.*[\">]\([^\"<>]*\)[\"<].*/\1/; p; q }' "${xpi_tmp_dir}/install.rdf")
-			[[ -z "${emid}" ]] && die "failed to determine extension id from install.rdf"
-		elif [[ -f "${xpi_tmp_dir}/manifest.json" ]] ; then
-			emid=$(sed -n -e 's/.*"id": "\([^"]*\)".*/\1/p' "${xpi_tmp_dir}/manifest.json")
-			[[ -z "${emid}" ]] && die "failed to determine extension id from manifest.json"
-		else
-			die "failed to determine extension id"
-		fi
-
-		einfo "Installing ${emid}.xpi into ${ED}${DESTDIR} ..."
-		newins "${xpi_file}" "${emid}.xpi"
-	done
 }
 
 mozconfig_add_options_ac() {
@@ -446,25 +274,11 @@ pkg_pretend() {
 	if [[ ${MERGE_TYPE} != binary ]] ; then
 		# Ensure we have enough disk space to compile
 		if use pgo || use debug ; then
-			CHECKREQS_DISK_BUILD="17000M"
-
-			if ! use clang ; then
-				if tc-is-gcc && ver_test "$(gcc-major-version)" -ge 16 && [[ -z "${I_KNOW_WHAT_I_AM_DOING}" ]] ; then
-					eerror "Firefox-140esr can't be compiled with +pgo using gcc >= 16. Use:"
-					eerror "  1) gcc < 16 instead, such as stable gcc-15.2.1,"
-					eerror "  2) \"clang\" use flag to compile Firefox-140esr, or"
-					eerror "  3) disable pgo via \"-pgo\" use flag."
-					eerror "Everything else works with gcc-16 except +pgo."
-					eerror ""
-					eerror "Follow Gentoo bug #975851 or upstream bug #2041879 for progress."
-					eerror "To skip this check for testing purposes, export I_KNOW_WHAT_I_AM_DOING=1 env."
-					die "Firefox-${PV} with gcc+pgo cannot be compiled with the detected gcc version: $(gcc-fullversion)"
-				fi
-			fi
+			CHECKREQS_DISK_BUILD="18700M"
 		elif tc-is-lto ; then
-			CHECKREQS_DISK_BUILD="9900M"
+			CHECKREQS_DISK_BUILD="10900M"
 		else
-			CHECKREQS_DISK_BUILD="9000M"
+			CHECKREQS_DISK_BUILD="9700M"
 		fi
 
 		check-reqs_pkg_pretend
@@ -488,20 +302,6 @@ pkg_setup() {
 			if ! has userpriv ${FEATURES} ; then
 				eerror "Building ${PN} with USE=pgo and FEATURES=-userpriv is not supported!"
 			fi
-
-			if ! use clang ; then
-				if tc-is-gcc && ver_test "$(gcc-major-version)" -ge 16 && [[ -z "${I_KNOW_WHAT_I_AM_DOING}" ]] ; then
-					eerror "Firefox-140esr can't be compiled with +pgo using gcc >= 16. Use:"
-					eerror "  1) gcc < 16 instead, such as stable gcc-15.2.1,"
-					eerror "  2) \"clang\" use flag to compile Firefox-140esr, or"
-					eerror "  3) disable pgo via \"-pgo\" use flag."
-					eerror "Everything else works with gcc-16, but +pgo doesn't."
-					eerror ""
-					eerror "Follow Gentoo bug #975851 or upstream bug #2041879 to follow progress."
-					eerror "To skip this check for testing purposes, export I_KNOW_WHAT_I_AM_DOING=1 env."
-					die "Firefox-${PV} with gcc+pgo cannot be compiled with the detected gcc version: $(gcc-fullversion)"
-				fi
-			fi
 		fi
 
 		if [[ ${use_lto} = yes ]]; then
@@ -512,11 +312,11 @@ pkg_setup() {
 
 		# Ensure we have enough disk space to compile
 		if use pgo || use debug ; then
-			CHECKREQS_DISK_BUILD="17000M"
+			CHECKREQS_DISK_BUILD="18700M"
 		elif [[ ${use_lto} == "yes" ]] ; then
-			CHECKREQS_DISK_BUILD="9900M"
+			CHECKREQS_DISK_BUILD="10900M"
 		else
-			CHECKREQS_DISK_BUILD="9000M"
+			CHECKREQS_DISK_BUILD="9700M"
 		fi
 
 		check-reqs_pkg_setup
@@ -554,6 +354,24 @@ pkg_setup() {
 			ewarn "/dev/shm is not mounted -- expect build failures!"
 		fi
 
+		# Google API keys (see http://www.chromium.org/developers/how-tos/api-keys)
+		# Note: These are for Gentoo Linux use ONLY. For your own distribution, please
+		# get your own set of keys.
+		if [[ -z "${MOZ_API_KEY_GOOGLE+set}" ]] ; then
+			MOZ_API_KEY_GOOGLE="AIzaSyDEAOvatFogGaPi0eTgsV_ZlEzx0ObmepsMzfAc"
+		fi
+
+		if [[ -z "${MOZ_API_KEY_LOCATION+set}" ]] ; then
+			MOZ_API_KEY_LOCATION="AIzaSyB2h2OuRgGaPicUgy5N-5hsZqiPW6sH3n_rptiQ"
+		fi
+
+		# Mozilla API keys (see https://location.services.mozilla.com/api)
+		# Note: These are for Gentoo Linux use ONLY. For your own distribution, please
+		# get your own set of keys.
+		if [[ -z "${MOZ_API_KEY_MOZILLA+set}" ]] ; then
+			MOZ_API_KEY_MOZILLA="edb3d487-3a84-46m0ap1e3-9dfd-92b5efaaa005"
+		fi
+
 		# Ensure we use C locale when building, bug #746215
 		export LC_ALL=C
 	fi
@@ -565,30 +383,32 @@ pkg_setup() {
 	linux-info_pkg_setup
 }
 
-src_prepare() {
-	if [[ ${use_lto} == "yes" ]]; then
-		rm -v "${WORKDIR}"/firefox-patches/*-LTO-Only-enable-LTO-*.patch || die
-	fi
-
-	# Workaround for bgo#915651 on musl
-	if use elibc_glibc ; then
-		rm -v "${WORKDIR}"/firefox-patches/*bgo-748849-RUST_TARGET_override.patch || die
-	fi
-
-	# Use modified patch that isn't mangled
-	for patch in 0013-gcc-lto-pgo-gentoo.patch 0016-bgo-929967-fix-pgo-on-musl.patch; do
-		cp "${FILESDIR}/${patch}" "${WORKDIR}/firefox-patches/${patch}" || die
+src_unpack() {
+	# Portage's unpack() does not natively understand .tar.zst (bug upstream:
+	# the suffix isn't in its known-formats list, so it silently skips the
+	# file instead of extracting it). Decompress it ourselves instead.
+	local a
+	for a in ${A} ; do
+		case "${a}" in
+			*.tar.zst)
+				ebegin "Unpacking ${a}"
+				mkdir -p "${S}"
+				tar -I zstd -xf "${DISTDIR}/${a}" -C "${S}" || die "failed to unpack ${a}"
+				eend $?
+				;;
+			*)
+				unpack "${a}"
+				;;
+		esac
 	done
+}
 
-	eapply "${WORKDIR}/firefox-patches"
-	use loong && eapply "${WORKDIR}/firefox-loong-patches"
-
-	if use system-icu && has_version ">=dev-libs/icu-78.1"; then
-		eapply "${FILESDIR}/firefox-146.0.1-icu78.patch" # in 147, bug #967261, bgo#967261
-	fi
-
+src_prepare() {
 	# Allow user to apply any additional patches without modifing ebuild
 	eapply_user
+
+	# Rename from glide-debug to glide
+	sed -i 's/glide-debug/glide/' "${S}/mozconfig" || die
 
 	# Make cargo respect MAKEOPTS
 	export CARGO_BUILD_JOBS="$(makeopts_jobs)"
@@ -661,8 +481,6 @@ src_prepare() {
 
 	# Clear checksums from cargo crates we've manually patched.
 	# moz_clear_vendor_checksums xyz
-	# glslopt: bgo#969412
-	moz_clear_vendor_checksums glslopt
 
 	# Respect choice for "jumbo-build"
 	# Changing the value for FILES_PER_UNIFIED_FILE may not work, see #905431
@@ -685,6 +503,11 @@ src_prepare() {
 	# Create build dir
 	BUILD_DIR="${WORKDIR}/${PN}_build"
 	mkdir -p "${BUILD_DIR}" || die
+
+	# Write API keys to disk
+	echo -n "${MOZ_API_KEY_GOOGLE//gGaPi/}" > "${S}"/api-google.key || die
+	echo -n "${MOZ_API_KEY_LOCATION//gGaPi/}" > "${S}"/api-location.key || die
+	echo -n "${MOZ_API_KEY_MOZILLA//m0ap1/}" > "${S}"/api-mozilla.key || die
 
 	xdg_environment_reset
 }
@@ -715,7 +538,6 @@ src_configure() {
 		CXX=${CHOST}-clang++-${version_clang}
 		NM=llvm-nm
 		RANLIB=llvm-ranlib
-
 	elif ! use clang && ! tc-is-gcc ; then
 		# Force gcc
 		have_switched_compiler=yes
@@ -759,13 +581,12 @@ src_configure() {
 	export MOZBUILD_STATE_PATH="${BUILD_DIR}"
 
 	# Set MOZCONFIG
-	export MOZCONFIG="${S}/.mozconfig"
+	export MOZCONFIG="${S}/mozconfig"
 
 	# Initialize MOZCONFIG
 	mozconfig_add_options_ac '' --enable-application=browser
 	mozconfig_add_options_ac '' --enable-project=browser
 
-	# Set Gentoo defaults
 	mozconfig_add_options_ac 'Gentoo default' \
 		--allow-addon-sideload \
 		--disable-cargo-incremental \
@@ -790,7 +611,6 @@ src_configure() {
 		--target="${CHOST}" \
 		--without-ccache \
 		--with-intl-api \
-		--with-l10n-base="${S}/l10n" \
 		--with-libclang-path="$(llvm-config --libdir)" \
 		--with-system-ffi \
 		--with-system-gbm \
@@ -817,14 +637,58 @@ src_configure() {
 		mozconfig_add_options_ac '' --enable-sandbox
 	fi
 
-	# riscv-related options, bgo#947337, bgo#947338
+	# riscv-related options, bgo#947337, bgo#947338, bgo#977845
 	if use riscv ; then
-		mozconfig_add_options_ac 'Disable JIT for RISC-V 64' --disable-jit
 		mozconfig_add_options_ac 'Disable webrtc for RISC-V' --disable-webrtc
+		mozconfig_add_options_ac 'Disable JIT for RISC-V' --disable-jit
+	fi
+
+	mozconfig_use_enable valgrind
+
+	if use valgrind ; then
+		mozconfig_add_options_ac 'valgrind requirement' --disable-sandbox
+		mozconfig_add_options_ac 'valgrind requirement' --disable-jemalloc
+
+		sed -i -e 's/--enable-optimize=-O[0-9s]/--enable-optimize="-g -O2"/' .mozconfig || die
+	fi
+
+	if [[ -s "${S}/api-google.key" ]] ; then
+		local key_origin="Gentoo default"
+		if [[ $(cat "${S}/api-google.key" | md5sum | awk '{ print $1 }') != 709560c02f94b41f9ad2c49207be6c54 ]] ; then
+			key_origin="User value"
+		fi
+
+		mozconfig_add_options_ac "${key_origin}" \
+			--with-google-safebrowsing-api-keyfile="${S}/api-google.key"
+	else
+		einfo "Building without Google API key ..."
+	fi
+
+	if [[ -s "${S}/api-location.key" ]] ; then
+		local key_origin="Gentoo default"
+		if [[ $(cat "${S}/api-location.key" | md5sum | awk '{ print $1 }') != ffb7895e35dedf832eb1c5d420ac7420 ]] ; then
+			key_origin="User value"
+		fi
+
+		mozconfig_add_options_ac "${key_origin}" \
+			--with-google-location-service-api-keyfile="${S}/api-location.key"
+	else
+		einfo "Building without Location API key ..."
+	fi
+
+	if [[ -s "${S}/api-mozilla.key" ]] ; then
+		local key_origin="Gentoo default"
+		if [[ $(cat "${S}/api-mozilla.key" | md5sum | awk '{ print $1 }') != 3927726e9442a8e8fa0e46ccc39caa27 ]] ; then
+			key_origin="User value"
+		fi
+
+		mozconfig_add_options_ac "${key_origin}" \
+			--with-mozilla-api-keyfile="${S}/api-mozilla.key"
+	else
+		einfo "Building without Mozilla API key ..."
 	fi
 
 	mozconfig_use_with system-av1
-	mozconfig_use_with system-harfbuzz
 	mozconfig_use_with system-icu
 	mozconfig_use_with system-jpeg
 	mozconfig_use_with system-libevent
@@ -835,14 +699,13 @@ src_configure() {
 
 	mozconfig_use_enable dbus
 	mozconfig_use_enable libproxy
+	mozconfig_use_enable jumbo-build unified-build
 
-	# --disable-eme is only supported on x86 and x86-64
-	if use amd64 || use x86 ; then
-		mozconfig_add_options_ac '' --disable-eme
-	fi
+	use eme-free && mozconfig_add_options_ac '+eme-free' --disable-eme
 
 	if use hardened ; then
 		mozconfig_add_options_ac "+hardened" --enable-hardening
+		mozconfig_add_options_ac "+hardened stl" --enable-stl-hardening
 		append-ldflags "-Wl,-z,relro -Wl,-z,now"
 
 		# Increase the FORTIFY_SOURCE value, #910071.
@@ -859,8 +722,6 @@ src_configure() {
 
 	mozconfig_use_enable wifi necko-wifi
 
-	! use jumbo-build && mozconfig_add_options_ac '--disable-unified-build' --disable-unified-build
-
 	if use X && use wayland ; then
 		mozconfig_add_options_ac '+x11+wayland' --enable-default-toolkit=cairo-gtk3-x11-wayland
 	elif ! use X && use wayland ; then
@@ -875,8 +736,9 @@ src_configure() {
 		mozconfig_add_options_ac '+wasm-sandbox' --with-wasi-sysroot="${WORKDIR}/wasi-sdk-${WASI_SDK_VER}-${wasi_arch}-linux/share/wasi-sysroot/"
 	else
 		mozconfig_add_options_ac 'no wasm-sandbox' --without-wasm-sandboxed-libraries
-		mozconfig_use_with system-harfbuzz system-graphite2
 	fi
+
+	! use jpegxl && mozconfig_add_options_ac '-jpegxl' --disable-jxl
 
 	if [[ ${use_lto} == "yes" ]] ; then
 		if use clang ; then
@@ -897,6 +759,7 @@ src_configure() {
 			mozconfig_add_options_ac '+lto' --enable-lto=full
 			mozconfig_add_options_ac "linker is set to bfd" --enable-linker=bfd
 		fi
+
 	else
 		# Avoid auto-magic on linker
 		if use clang ; then
@@ -923,11 +786,14 @@ src_configure() {
 		# Avoid compressing just-built instrumented Firefox with
 		# high levels of compression. Just use tar as a container
 		# to save >=10 minutes.
-		export MOZ_PKG_FORMAT=tar
+		export MOZ_PKG_FORMAT=TAR
 
 		if use clang ; then
 			# Used in build/pgo/profileserver.py
 			export LLVM_PROFDATA="llvm-profdata"
+		else
+			# Attempt to fix pgo hanging with gcc, bgo#966309.
+			export MOZ_REMOTE_SETTINGS_DEVTOOLS=1
 		fi
 	fi
 
@@ -1007,6 +873,13 @@ src_configure() {
 
 	export MACH_BUILD_PYTHON_NATIVE_PACKAGE_SOURCE="none"
 
+	if ! use telemetry; then
+		mozconfig_add_options_mk '-telemetry setting' "MOZ_CRASHREPORTER=0"
+		mozconfig_add_options_mk '-telemetry setting' "MOZ_DATA_REPORTING=0"
+		mozconfig_add_options_mk '-telemetry setting' "MOZ_SERVICES_HEALTHREPORT=0"
+		mozconfig_add_options_mk '-telemetry setting' "MOZ_TELEMETRY_REPORTING=0"
+	fi
+
 	mozconfig_use_enable test tests
 
 	# Disable notification when build system has finished
@@ -1084,9 +957,6 @@ src_compile() {
 	fi
 
 	${virtx_cmd} ./mach build --verbose || die
-
-	# Build language packs
-	moz_build_xpi
 }
 
 src_test() {
@@ -1121,19 +991,10 @@ src_install() {
 
 	DESTDIR="${D}" ./mach install || die
 
-	# Upstream cannot ship symlink but we can (bmo#658850)
-	rm "${ED}${MOZILLA_FIVE_HOME}/${PN}-bin" || die
-	dosym ${PN} ${MOZILLA_FIVE_HOME}/${PN}-bin
-
 	# Don't install llvm-symbolizer from llvm-core/llvm package
 	if [[ -f "${ED}${MOZILLA_FIVE_HOME}/llvm-symbolizer" ]] ; then
 		rm -v "${ED}${MOZILLA_FIVE_HOME}/llvm-symbolizer" || die
 	fi
-
-	# Install policy (currently only used to disable application updates)
-	insinto "${MOZILLA_FIVE_HOME}/distribution"
-	newins "${FILESDIR}"/distribution.ini distribution.ini
-	newins "${FILESDIR}"/disable-auto-update.policy.json policies.json
 
 	# Install system-wide preferences
 	local PREFS_DIR="${MOZILLA_FIVE_HOME}/browser/defaults/preferences"
@@ -1149,7 +1010,7 @@ src_install() {
 
 	# Force hwaccel prefs if USE=hwaccel is enabled
 	if use hwaccel ; then
-		cat "${FILESDIR}"/gentoo-hwaccel-prefs.js-r2 \
+		cat "${FILESDIR}"/gentoo-hwaccel-prefs.js-r4 \
 		>>"${GENTOO_PREFS}" \
 		|| die "failed to add prefs to force hardware-accelerated rendering to all-gentoo.js"
 
@@ -1163,35 +1024,29 @@ src_install() {
 			EOF
 		fi
 
-		# Install the vaapitest binary on supported arches (122.0 supports all platforms, bmo#1865969)
+		# Install the gfxtest binary on supported arches
 		exeinto "${MOZILLA_FIVE_HOME}"
-		doexe "${BUILD_DIR}"/dist/bin/vaapitest
-
-		# Install the v4l2test on supported arches (+ arm, + riscv64 when keyworded)
-		if use arm64 ; then
-			exeinto "${MOZILLA_FIVE_HOME}"
-			doexe "${BUILD_DIR}"/dist/bin/v4l2test
-		fi
+		doexe "${BUILD_DIR}"/dist/bin/gfxtest
 	fi
 
-	# Force the graphite pref if USE=system-harfbuzz is enabled, since the pref cannot disable it
-	if use system-harfbuzz ; then
-		cat >>"${GENTOO_PREFS}" <<-EOF || die "failed to set gfx.font_rendering.graphite.enabled pref"
-		sticky_pref("gfx.font_rendering.graphite.enabled", true);
-		EOF
+	if ! use gmp-autoupdate ; then
+		local plugin
+		for plugin in "${MOZ_GMP_PLUGIN_LIST[@]}" ; do
+			einfo "Disabling auto-update for ${plugin} plugin ..."
+			cat >>"${GENTOO_PREFS}" <<-EOF || die "failed to disable autoupdate for ${plugin} media plugin"
+			pref("media.${plugin}.autoupdate", false);
+			EOF
+		done
 	fi
 
-	# Install language packs
-	local langpacks=( $(find "${BUILD_DIR}"/dist/linux-x86_64/xpi -type f -name '*.xpi') )
-	if [[ -n "${langpacks}" ]] ; then
-		moz_install_xpi "${MOZILLA_FIVE_HOME}/distribution/extensions" "${langpacks[@]}"
+	# Add telemetry config prefs, just in case something happens in future and telemetry build
+	# options stop working.
+	if ! use telemetry ; then
+		cat "${FILESDIR}"/gentoo-telemetry-prefs.js >>"${GENTOO_PREFS}" || die "failed to set telemetry prefs"
 	fi
 
 	# Install icons
 	local icon_srcdir="${S}/browser/branding/official"
-
-	insinto /usr/share/icons/hicolor/symbolic/apps
-	newins "${FILESDIR}/icon/icecat-symbolic.svg" icecat-symbolic.svg
 
 	local icon size
 	for icon in "${icon_srcdir}"/default*.png ; do
@@ -1205,46 +1060,32 @@ src_install() {
 		newicon -s ${size} "${icon}" ${PN}.png
 	done
 
-	# Install menu
-	local app_name="GNU IceCat"
-	local desktop_file="${FILESDIR}/icon/${PN}-r3.desktop"
-	local exec_command="${PN}"
-	local icon="${PN}"
-	local use_wayland="false"
-
-	if use wayland ; then
-		use_wayland="true"
-	fi
-
-	cp "${desktop_file}" "${WORKDIR}/${PN}.desktop-template" || die
-
-	sed -i \
-		-e "s:@NAME@:${app_name}:" \
-		-e "s:@EXEC@:${exec_command}:" \
-		-e "s:@ICON@:${icon}:" \
-		"${WORKDIR}/${PN}.desktop-template" || die
-
-	newmenu "${WORKDIR}/${PN}.desktop-template" icecat.desktop
-
-	rm "${WORKDIR}/${PN}.desktop-template" || die
+	# Error - newins
+	# newmenu "${FILESDIR}/icon/glide-r3.desktop" "${PN}.desktop"
 
 	if use gnome-shell ; then
 		# Install search provider for Gnome
 		insinto /usr/share/gnome-shell/search-providers/
-		doins browser/components/shell/search-provider-files/org.gnu.icecat.search-provider.ini
+		doins browser/components/shell/search-provider-files/org.mozilla.firefox.search-provider.ini
 
 		insinto /usr/share/dbus-1/services/
-		doins browser/components/shell/search-provider-files/org.gnu.icecat.SearchProvider.service
+		doins browser/components/shell/search-provider-files/org.mozilla.firefox.SearchProvider.service
 
 		# Make the dbus service aware of a previous session, bgo#939196
 		sed -e \
-			"s/Exec=\/usr\/bin\/icecat/Exec=\/usr\/$(get_libdir)\/icecat\/icecat --dbus-service \/usr\/bin\/icecat/g" \
-			-i "${ED}/usr/share/dbus-1/services/org.gnu.icecat.SearchProvider.service" ||
-				die "Failed to sed org.gnu.icecat.SearchProvider.service dbus file"
+			"s/Exec=\/usr\/bin\/firefox/Exec=\/usr\/$(get_libdir)\/firefox\/firefox --dbus-service \/usr\/bin\/firefox/g" \
+			-i "${ED}/usr/share/dbus-1/services/org.mozilla.firefox.SearchProvider.service" ||
+				die "Failed to sed org.mozilla.firefox.SearchProvider.service dbus file"
 
 		# Update prefs to enable Gnome search provider
 		cat >>"${GENTOO_PREFS}" <<-EOF || die "failed to enable gnome-search-provider via prefs"
 		pref("browser.gnome-search-provider.enabled", true);
+		EOF
+	fi
+
+	if use jpegxl ; then
+		cat >>"${GENTOO_PREFS}" <<-EOF || die "failed to enable jpegxl via pref"
+		pref("image.jxl.enabled", true);
 		EOF
 	fi
 
@@ -1257,42 +1098,4 @@ src_install() {
 		-e "s:@PREFIX@:${EPREFIX}/usr:" \
 		-e "s:@DEFAULT_WAYLAND@:${use_wayland}:" \
 		"${ED}/usr/bin/${PN}" || die
-
-	readme.gentoo_create_doc
-}
-
-pkg_postinst() {
-	xdg_pkg_postinst
-
-	elog "Cloudflare browser checks are broken with GNU IceCats anti fingerprinting measures."
-	elog "You can fix cloudflare browser checks by undoing them in about:config like below:"
-	# Specifying (X11) is necessary for it to work, even in a Wayland session
-	elog "   general.appversion.override: ${PV%.[0-9]*} (X11)"
-	elog "   general.oscpu.override: Linux x86_64"
-	elog "   general.platform.override: Linux x86_64"
-
-	# bug 835078
-	if use hwaccel && has_version "x11-drivers/xf86-video-nouveau"; then
-		ewarn "You have nouveau drivers installed in your system and 'hwaccel' "
-		ewarn "enabled for Firefox. Nouveau / your GPU might not support the "
-		ewarn "required EGL, so either disable 'hwaccel' or try the workaround "
-		ewarn "explained in https://bugs.gentoo.org/835078#c5 if Firefox crashes."
-	fi
-
-	readme.gentoo_print_elog
-
-	optfeature_header "Optional programs for extra features:"
-	optfeature "desktop notifications" x11-libs/libnotify
-	optfeature "fallback mouse cursor theme e.g. on WMs" gnome-base/gsettings-desktop-schemas
-	optfeature "screencasting with pipewire" sys-apps/xdg-desktop-portal
-	if use hwaccel && has_version "x11-drivers/nvidia-drivers"; then
-		optfeature "hardware acceleration with NVIDIA cards" media-libs/nvidia-vaapi-driver
-	fi
-
-	if ! has_version "sys-libs/glibc"; then
-		elog
-		elog "glibc not found! You won't be able to play DRM content."
-		elog "See Gentoo bug #910309 or upstream bug #1843683."
-		elog
-	fi
 }

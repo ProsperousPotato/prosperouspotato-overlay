@@ -3,9 +3,9 @@
 ##
 ## Usage:
 ##
-## $ icecat
+## $ glide
 ##
-## This script is meant to run GNU IceCat in Gentoo.
+## This script is meant to run Glide Browser in Gentoo.
 
 cmdname=$(basename "$0")
 
@@ -24,21 +24,20 @@ case ${MOZ_ARCH} in
 		;;
 esac
 
-MOZ_FIREFOX_FILE="icecat"
+MOZ_GLIDE_FILE="glide"
 
-if [[ ! -r ${MOZ_LIB_DIR}/icecat/${MOZ_FIREFOX_FILE} ]]; then
-	if [[ ! -r ${SECONDARY_LIB_DIR}/icecat/${MOZ_FIREFOX_FILE} ]]; then
-		echo "Error: ${MOZ_LIB_DIR}/icecat/${MOZ_FIREFOX_FILE} not found" >&2
+if [[ ! -r ${MOZ_LIB_DIR}/glide/${MOZ_GLIDE_FILE} ]]; then
+	if [[ ! -r ${SECONDARY_LIB_DIR}/glide/${MOZ_GLIDE_FILE} ]]; then
+		echo "Error: ${MOZ_LIB_DIR}/glide/${MOZ_GLIDE_FILE} not found" >&2
 		if [[ -d ${SECONDARY_LIB_DIR} ]]; then
-			echo "       ${SECONDARY_LIB_DIR}/icecat/${MOZ_FIREFOX_FILE} not found" >&2
+			echo "       ${SECONDARY_LIB_DIR}/glide/${MOZ_GLIDE_FILE} not found" >&2
 		fi
 		exit 1
 	fi
 	MOZ_LIB_DIR="${SECONDARY_LIB_DIR}"
 fi
-MOZILLA_FIVE_HOME="${MOZ_LIB_DIR}/icecat"
-MOZ_EXTENSIONS_PROFILE_DIR="${HOME}/.mozilla/extensions/{ec8030f7-c20a-464f-9b0e-13a3a9e97384}"
-MOZ_PROGRAM="${MOZILLA_FIVE_HOME}/${MOZ_FIREFOX_FILE}"
+MOZILLA_FIVE_HOME="${MOZ_LIB_DIR}/glide"
+MOZ_PROGRAM="${MOZILLA_FIVE_HOME}/${MOZ_GLIDE_FILE}"
 
 ##
 ## Enable Wayland backend?

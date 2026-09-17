@@ -1,10 +1,10 @@
 [Desktop Entry]
 Version=1.0
-Name=@NAME@
+Name=Glide Browser
 GenericName=Web Browser
 Comment=Browse the Web
-Exec=@EXEC@ %u
-Icon=@ICON@
+Exec=glide %u
+Icon=glide
 Terminal=false
 Type=Application
 MimeType=application/pdf;application/vnd.mozilla.xul+xml;application/xhtml+xml;text/html;text/mml;text/xml;x-scheme-handler/http;x-scheme-handler/https;
@@ -119,7 +119,7 @@ Name[wo]=Palanteer bu bees
 Name[xh]=Ifestile entsha
 Name[zh_CN]=新建窗口
 Name[zh_TW]=開新視窗
-Exec=@EXEC@ --new-window %u
+Exec=glide --new-window %u
 
 [Desktop Action new-private-window]
 Name=Open a New Private Window
@@ -227,10 +227,10 @@ Name[wo]=Panlanteeru biir bu bees
 Name[xh]=Ifestile yangasese entsha
 Name[zh_CN]=新建隐私浏览窗口
 Name[zh_TW]=新增隱私視窗
-Exec=@EXEC@ --private-window %u
+Exec=glide --private-window %u
 
 [Desktop Action profile-manager-window]
 Name=Open the Profile Manager
 Name[de]=Profilverwaltung öffnen
 Name[cs]=Správa profilů
-Exec=@EXEC@ --ProfileManager
+Exec=glide --ProfileManager
