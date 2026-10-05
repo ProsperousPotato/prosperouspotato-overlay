@@ -26,6 +26,7 @@ RDEPEND="
 		>=dev-lang/zig-0.16
 		>=dev-lang/zig-bin-0.16
 	)
+	selinux? ( sys-libs/libselinux )
 "
 
 src_prepare() {
