@@ -28,7 +28,7 @@ S="${WORKDIR}/${PN}-${PV%_*}"
 
 LICENSE="MPL-2.0 GPL-2 LGPL-2.1"
 SLOT="0"
-KEYWORDS="amd64"
+KEYWORDS="amd64 ~arm64"
 
 IUSE="+clang dbus debug eme-free hardened hwaccel jack libproxy pgo pulseaudio selinux sndio"
 IUSE+=" +system-av1 +system-icu +system-jpeg +system-libevent +system-libvpx"
@@ -417,22 +417,8 @@ src_prepare() {
 	if ! use elibc_glibc ; then
 		if use amd64 ; then
 			export RUST_TARGET="x86_64-unknown-linux-musl"
-		elif use x86 ; then
-			export RUST_TARGET="i686-unknown-linux-musl"
 		elif use arm64 ; then
 			export RUST_TARGET="aarch64-unknown-linux-musl"
-		elif use loong; then
-			# Only the LP64D ABI of LoongArch64 is actively supported among
-			# the wider Linux ecosystem, so the assumption is safe.
-			export RUST_TARGET="loongarch64-unknown-linux-musl"
-		elif use ppc64 ; then
-			export RUST_TARGET="powerpc64le-unknown-linux-musl"
-		elif use riscv ; then
-			# We can pretty safely rule out any 32-bit riscvs, but 64-bit riscvs also have tons of
-			# different ABIs available. riscv64gc-unknown-linux-musl seems to be the best working
-			# guess right now though.
-			elog "riscv detected, forcing a riscv64 target for now."
-			export RUST_TARGET="riscv64gc-unknown-linux-musl"
 		else
 			die "Unknown musl chost, please post a new bug with your rustc -vV along with emerge --info"
 		fi
@@ -593,17 +579,20 @@ src_configure() {
 		--disable-crashreporter \
 		--disable-disk-remnant-avoidance \
 		--disable-geckodriver \
-		--disable-install-strip \
+		--disable-necko-wifi \
 		--disable-legacy-profile-creation \
 		--disable-parental-controls \
-		--disable-strip \
 		--disable-updater \
+		--enable-strip \
+		--enable-sandbox \
 		--disable-wmf \
+		--disable-debug \
 		--enable-negotiateauth \
 		--enable-new-pass-manager \
 		--enable-official-branding \
 		--enable-packed-relative-relocs \
 		--enable-release \
+		--disable-dmd \
 		--enable-system-policies \
 		--host="${CBUILD:-${CHOST}}" \
 		--libdir="${EPREFIX}/usr/$(get_libdir)" \
@@ -619,29 +608,19 @@ src_configure() {
 		--with-system-nss \
 		--with-system-pixman \
 		--with-system-zlib \
+		--enable-ffmpeg \
+		--enable-jit \
+		--enable-raw \
+		--disable-debug \
+		--disable-debug-symbols \
+		--disable-debug-js-modules \
+		--disable-tests \
+		--disable-rust-tests \
+		--enable-rust-simd \
+		--enable-wasm-simd \
 		--with-toolchain-prefix="${CHOST}-" \
 		--with-unsigned-addon-scopes=app,system
 
-	# Whitelist to allow unkeyworded arches to build with "--disable-rust-simd" by default.
-	if use amd64 || use arm64 || use ppc64 || use loong || use riscv ; then
-		mozconfig_add_options_ac '' --enable-rust-simd
-	fi
-
-	# For future keywording: This is currently (97.0) only supported on:
-	# amd64, arm, arm64 & x86.
-	# Might want to flip the logic around if Firefox is to support more arches.
-	# bug 833001, bug 903411#c8
-	if use loong || use ppc64 || use riscv; then
-		mozconfig_add_options_ac '' --disable-sandbox
-	else
-		mozconfig_add_options_ac '' --enable-sandbox
-	fi
-
-	# riscv-related options, bgo#947337, bgo#947338, bgo#977845
-	if use riscv ; then
-		mozconfig_add_options_ac 'Disable webrtc for RISC-V' --disable-webrtc
-		mozconfig_add_options_ac 'Disable JIT for RISC-V' --disable-jit
-	fi
 
 	mozconfig_use_enable valgrind
 
@@ -838,7 +817,7 @@ src_configure() {
 
 	# elf-hack
 	# Filter "-z,pack-relative-relocs" and let the build system handle it instead.
-	if use amd64 || use x86 ; then
+	if use amd64 ; then
 		filter-flags "-z,pack-relative-relocs"
 
 		if tc-ld-is-mold ; then
@@ -847,10 +826,6 @@ src_configure() {
 		else
 			mozconfig_add_options_ac 'relr elf-hack' --enable-elf-hack=relr
 		fi
-	elif use loong || use ppc64 || use riscv ; then
-		# '--disable-elf-hack' is not recognized on loong/ppc64/riscv,
-		# see bgo #917049, #930046
-		:;
 	else
 		mozconfig_add_options_ac 'disable elf-hack on non-supported arches' --disable-elf-hack
 	fi

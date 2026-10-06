@@ -19,7 +19,7 @@ LICENSE="GPL-3"
 SLOT="0"
 
 RDEPEND="
-	sys-apps/ubase[init]
+	sys-apps/zbase[init]
 	!sys-apps/sysvinit
 	|| (
 		>=dev-lang/zig-0.16

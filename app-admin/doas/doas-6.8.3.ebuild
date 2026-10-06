@@ -14,6 +14,9 @@ LICENSE="ISC"
 SLOT="0"
 KEYWORDS="amd64 arm arm64 ~hppa ~loong ~ppc ppc64 ~riscv ~s390 ~sparc ~x86"
 IUSE="pam persist selinux"
+
+REQUIRED_USE="selinux? ( !pam ) "
+
 RESTRICT="mirror"
 
 BDEPEND="app-alternatives/yacc"
