@@ -52,4 +52,8 @@ src_install() {
 	use login && man1+="login.1 "
 
 	emake BIN="$(zbase_bin)" MAN8="${man8}" MAN1="${man1}" DESTDIR="${D}" PREFIX=/usr install
+
+	if use su; then
+		fperms 4755 /usr/bin/su
+	fi
 }
