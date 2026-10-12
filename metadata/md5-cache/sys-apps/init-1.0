@@ -7,9 +7,9 @@ INHERIT=zig savedconfig
 IUSE=savedconfig
 KEYWORDS=amd64
 LICENSE=GPL-3
-RDEPEND=sys-apps/ubase[init] !sys-apps/sysvinit || ( >=dev-lang/zig-0.16 >=dev-lang/zig-bin-0.16 )
+RDEPEND=sys-apps/zbase[init] !sys-apps/sysvinit || ( >=dev-lang/zig-0.16 >=dev-lang/zig-bin-0.16 )
 RESTRICT=mirror
 SLOT=0
 SRC_URI=https://git.adamsucks.me/init/snapshot/init-1.0.tar.xz
-_eclasses_=multiprocessing	45d0620f25c2f063ad6276ecd9ed9399	edo	a5e294016aa84979fcb2459749eb80b2	toolchain-funcs	58a918e3a42d0156f010dcfd43725be5	flag-o-matic	fd3558f73f6503093adee69adf41020d	linux-info	efd923656513c879204fec6638eadee5	zig-utils	cf2ce10a519a93e5074f21f58d06aaae	zig	fd63b54c5a3cec5302ed2c18a763a851	portability	3c2334cdfbb30bc4b33c85164fe832bf	savedconfig	b9131abe556ad2ea96c01b06d658d363
-_md5_=d91cabac0de34e885e04d75bfd8c86f1
+_eclasses_=multiprocessing	45d0620f25c2f063ad6276ecd9ed9399	edob	357e125b8c5cad0deccb625e537ea831	edo	e472083829a6e7ff43a197cf536728a2	toolchain-funcs	58a918e3a42d0156f010dcfd43725be5	flag-o-matic	fd3558f73f6503093adee69adf41020d	linux-info	efd923656513c879204fec6638eadee5	zig-utils	cf2ce10a519a93e5074f21f58d06aaae	zig	fd63b54c5a3cec5302ed2c18a763a851	portability	3c2334cdfbb30bc4b33c85164fe832bf	savedconfig	b9131abe556ad2ea96c01b06d658d363
+_md5_=4425c3bd18a41a8fb67ac8639c4d69a9

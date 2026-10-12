@@ -1,0 +1,17 @@
+BDEPEND=app-alternatives/yacc
+DEFINED_PHASES=configure postinst
+DEPEND=pam? ( sys-libs/pam ) !pam? ( virtual/libcrypt:= ) selinux? ( sys-libs/libselinux )
+DESCRIPTION=Run commands as super/another user (alt sudo) (unofficial port from OpenBSD)
+EAPI=8
+HOMEPAGE=https://github.com/Duncaen/OpenDoas https://git.adamsucks.me/doas
+INHERIT=toolchain-funcs
+IUSE=pam persist selinux
+KEYWORDS=amd64 arm arm64 ~hppa ~loong ~ppc ppc64 ~riscv ~s390 ~sparc ~x86
+LICENSE=ISC
+RDEPEND=pam? ( sys-libs/pam ) !pam? ( virtual/libcrypt:= ) selinux? ( sys-libs/libselinux )
+REQUIRED_USE=selinux? ( !pam )
+RESTRICT=mirror
+SLOT=0
+SRC_URI=https://git.adamsucks.me/doas/snapshot/doas-6.8.3.tar.xz
+_eclasses_=toolchain-funcs	58a918e3a42d0156f010dcfd43725be5
+_md5_=8b9497d29b0fc34aa56603c2e0ccf618
