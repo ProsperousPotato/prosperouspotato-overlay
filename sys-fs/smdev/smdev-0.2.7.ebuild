@@ -14,31 +14,39 @@ RESTRICT="mirror"
 
 SRC_URI="https://git.adamsucks.me/${PN}/snapshot/${PN}-${PV}.tar.xz"
 KEYWORDS="amd64"
-IUSE="-static scripts -lvm"
+IUSE="-static scripts -lvm selinux"
 REQUIRED_USE="lvm? ( scripts )"
 
 LICENSE="MIT"
 SLOT="0"
 
 DEPEND="
-sys-kernel/linux-headers
-!sys-apps/systemd-utils[udev]
-acct-group/audio
-acct-group/cdrom
-acct-group/dialout
-acct-group/disk
-acct-group/floppy
-acct-group/input
-acct-group/kmem
-acct-group/render
-acct-group/sgx
-acct-group/tape
-acct-group/tty
-acct-group/usb
-acct-group/video
+	sys-kernel/linux-headers
+	!sys-apps/systemd-utils[udev]
+	acct-group/audio
+	acct-group/cdrom
+	acct-group/dialout
+	acct-group/disk
+	acct-group/floppy
+	acct-group/input
+	acct-group/kmem
+	acct-group/render
+	acct-group/sgx
+	acct-group/tape
+	acct-group/tty
+	acct-group/usb
+	acct-group/video
+	selinux? (
+		static? ( sys-libs/libselinux[static-libs(+)] )
+		sys-libs/libselinux
+	)
 "
 
 RDEPEND="${DEPEND}"
+
+BDEPEND="
+	selinux? ( virtual/pkgconfig )
+"
 
 src_prepare() {
 	default
@@ -47,11 +55,9 @@ src_prepare() {
 }
 
 src_compile() {
-	if use static; then
-		emake CC="$(tc-getCC)" CFLAGS="${CFLAGS} -static" LDFLAGS="${LDFLAGS} -s -static"
-	else
-		emake CC="$(tc-getCC)" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS} -s"
-	fi
+	emake CC="$(tc-getCC)" \
+		CFLAGS="${CFLAGS} $() $(usev selinux -DHAVE_SELINUX) $(usev static -static)" \
+		LDFLAGS="${LDFLAGS} -s $(usev selinux -lselinux) $(usev static -static)"
 }
 
 src_install() {
