@@ -30,7 +30,7 @@ RESTRICT="mirror"
 SLOT="0"
 
 DEPEND="
-	arcan-stuff/arcan
+	gui-arcan/arcan
 	app-alternatives/lex
 	dev-libs/expat
 	dev-libs/libbsd

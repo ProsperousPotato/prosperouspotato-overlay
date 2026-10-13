@@ -24,7 +24,7 @@ SLOT="0"
 
 DEPEND="
 	dev-qt/qtbase:6=[gui,opengl]
-	arcan-stuff/arcan
+	gui-arcan/arcan
 "
 
 RDEPEND="${DEPEND}"
