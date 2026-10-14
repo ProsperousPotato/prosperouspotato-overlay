@@ -3,15 +3,12 @@
 
 EAPI=8
 
-inherit savedconfig toolchain-funcs
+inherit savedconfig toolchain-funcs git-r3
 
 DESCRIPTION="a dynamic window manager for X11"
 HOMEPAGE="https://dwm.suckless.org/"
 
-RESTRICT="mirror"
-
-SRC_URI="https://git.adamsucks.me/${PN}/snapshot/${PN}-${PV}.tar.xz"
-KEYWORDS="amd64 ~arm arm64 ppc ppc64 ~riscv x86"
+EGIT_REPO_URI="git://git.adamsucks.me/dwm"
 IUSE="desktop"
 
 LICENSE="MIT"
