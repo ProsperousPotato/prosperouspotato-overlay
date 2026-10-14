@@ -3,15 +3,14 @@
 
 EAPI=8
 
-inherit desktop savedconfig toolchain-funcs
+inherit desktop savedconfig toolchain-funcs git-r3
 
 DESCRIPTION="Simple terminal implementation for X"
 HOMEPAGE="https://st.suckless.org/"
 
 RESTRICT="mirror"
 
-SRC_URI="https://git.adamsucks.me/${PN}/snapshot/${PN}-${PV}.tar.xz"
-KEYWORDS="amd64 ~arm arm64 ~hppa ~m68k ppc64 ~riscv x86"
+EGIT_REPO_URI="git://git.adamsucks.me/${PN}"
 
 LICENSE="MIT"
 SLOT="0"
@@ -21,7 +20,7 @@ RDEPEND="
 	media-libs/fontconfig
 	x11-libs/libX11
 	x11-libs/libXft
-	~x11-terms/st-terminfo-${PV}
+	x11-terms/st-terminfo
 	media-fonts/font-misc-misc
 "
 DEPEND="
