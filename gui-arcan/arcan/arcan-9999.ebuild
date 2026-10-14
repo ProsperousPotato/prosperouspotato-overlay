@@ -11,7 +11,6 @@ HOMEPAGE="https://arcan-fe.com"
 if [[ ${PV} == "9999" ]]; then
 	inherit git-r3
 	EGIT_REPO_URI="https://codeberg.org/letoram/${PN}"
-	KEYWORDS=""
 else
 	SRC_URI="https://codeberg.org/letoram/${PN}/archive/${PV}.tar.gz -> ${PN}-${PV}.tar.gz"
 	KEYWORDS="~amd64"
