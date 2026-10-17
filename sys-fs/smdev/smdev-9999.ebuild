@@ -14,7 +14,7 @@ RESTRICT="mirror"
 
 if [[ ${PV} == 9999 ]]; then
 	inherit git-r3
-	EGIT_REPO_URI="git://git.adamsucks.me/smdev"
+	EGIT_REPO_URI="https://git.adamsucks.me/smdev"
 else
 	SRC_URI="https://git.adamsucks.me/${PN}/snapshot/${PN}-${PV}.tar.xz"
 	KEYWORDS="amd64"

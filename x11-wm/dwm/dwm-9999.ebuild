@@ -8,7 +8,7 @@ inherit savedconfig toolchain-funcs git-r3
 DESCRIPTION="a dynamic window manager for X11"
 HOMEPAGE="https://dwm.suckless.org/"
 
-EGIT_REPO_URI="git://git.adamsucks.me/${PN}"
+EGIT_REPO_URI="https://git.adamsucks.me/${PN}"
 IUSE="desktop"
 
 LICENSE="MIT"

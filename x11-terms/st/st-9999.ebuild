@@ -10,7 +10,7 @@ HOMEPAGE="https://st.suckless.org/"
 
 RESTRICT="mirror"
 
-EGIT_REPO_URI="git://git.adamsucks.me/${PN}"
+EGIT_REPO_URI="https://git.adamsucks.me/${PN}"
 
 LICENSE="MIT"
 SLOT="0"
