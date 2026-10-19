@@ -1,0 +1,10 @@
+DEFINED_PHASES=install unpack
+DEPEND=!sys-apps/systemd !sys-apps/openrc
+DESCRIPTION=Register misc binary formats with the kernel
+EAPI=8
+HOMEPAGE=https://github.com/OpenRC/openrc
+KEYWORDS=amd64 arm64
+LICENSE=GPL-2
+RDEPEND=!sys-apps/systemd !sys-apps/openrc
+SLOT=0
+_md5_=f0f17afd4854934b4ab4871469fc603b

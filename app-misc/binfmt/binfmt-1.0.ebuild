@@ -4,7 +4,7 @@
 EAPI=8
 
 DESCRIPTION="Register misc binary formats with the kernel"
-HOMEPAGE=""
+HOMEPAGE="https://github.com/OpenRC/openrc"
 
 KEYWORDS="amd64 arm64"
 LICENSE="GPL-2"
